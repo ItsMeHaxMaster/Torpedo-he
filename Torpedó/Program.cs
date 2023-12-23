@@ -95,15 +95,19 @@ namespace Torpedó
             //Submarine = 3
             //PatrolBoat = 2
 
-            WriteLine("Add meg a hajó nevét! (Carrier, BattleShip, Destroyer, Submarine, PatrolBoat)");
-            string ship = ReadLine();
-            if (ship != "Carrier" && ship != "carrier" && ship != "c" && ship != "C" && ship != "Battleship" && ship != "battleship" && ship != "b" && ship != "B" && ship == "Destroyer" &&
-                ship != "Submarine" && ship != "destroyer" && ship != "submarine" && ship != "d" && ship != "s" && ship != "D" && ship != "S" && ship != "PatrolBoat" && ship != "patrolboat" && ship != "p" && ship != "P")
+            ForegroundColor = ConsoleColor.Cyan;
+            WriteLine("Add meg a hajó nevét! (Carrier(1), BattleShip(2), Destroyer(3), Submarine(4), PatrolBoat(5) )");
+            ForegroundColor = ConsoleColor.Gray;
+            int ship = Int32.Parse(ReadLine());
+            if (ship < 1 || ship > 5)
             {
+                ForegroundColor = ConsoleColor.Red;
                 WriteLine("Balfasz");
                 Place();
             }
+            ForegroundColor = ConsoleColor.Cyan;
             WriteLine("Add meg, hogy mettől, meddig akarod lerakni!");
+            ForegroundColor = ConsoleColor.Gray;
             string from = ReadLine();
             int fromX = mapCharToIntDict[from[0]];
             int fromY = Int32.Parse(from[1].ToString()) - 1;
@@ -111,7 +115,9 @@ namespace Torpedó
             int toX = mapCharToIntDict[to[0]];
             int toY = Int32.Parse(to[1].ToString()) - 1;
 
-            if (ship == "Carrier" || ship == "carrier" || ship == "c" || ship == "C")
+            ForegroundColor = ConsoleColor.Green;
+
+            if (ship == 1)
             {
                 if (fromX == toX)
                 {
@@ -122,6 +128,7 @@ namespace Torpedó
                     }
                     else
                     {
+                        ForegroundColor = ConsoleColor.Red;
                         WriteLine("Balfasz");
                         Place();
                     }
@@ -135,17 +142,19 @@ namespace Torpedó
                     }
                     else
                     {
+                        ForegroundColor = ConsoleColor.Red;
                         WriteLine("Balfasz");
                         Place();
                     }
                 }
                 else
                 {
+                    ForegroundColor = ConsoleColor.Red;
                     WriteLine("Balfasz");
                     Place();
                 }
             }
-            else if (ship == "BattleShip" || ship == "battleship" || ship == "b" || ship == "B")
+            else if (ship == 2)
             {
                 if (fromX == toX)
                 {
@@ -156,6 +165,7 @@ namespace Torpedó
                     }
                     else
                     {
+                        ForegroundColor = ConsoleColor.Red;
                         WriteLine("Balfasz");
                         Place();
                     }
@@ -169,17 +179,19 @@ namespace Torpedó
                     }
                     else
                     {
+                        ForegroundColor = ConsoleColor.Red;
                         WriteLine("Balfasz");
                         Place();
                     }
                 }
                 else
                 {
+                    ForegroundColor = ConsoleColor.Red;
                     WriteLine("Balfasz");
                     Place();
                 }
             }
-            else if (ship == "Destroyer" || ship == "Submarine" || ship == "destroyer" || ship == "submarine" || ship == "d" || ship == "s" || ship == "D" || ship == "S")
+            else if (ship == 3 || ship == 4)
             {
                 if (fromX == toX)
                 {
@@ -190,6 +202,7 @@ namespace Torpedó
                     }
                     else
                     {
+                        ForegroundColor = ConsoleColor.Red;
                         WriteLine("Balfasz");
                         Place();
                     }
@@ -203,17 +216,19 @@ namespace Torpedó
                     }
                     else
                     {
+                        ForegroundColor = ConsoleColor.Red;
                         WriteLine("Balfasz");
                         Place();
                     }
                 }
                 else
                 {
+                    ForegroundColor = ConsoleColor.Red;
                     WriteLine("Balfasz");
                     Place();
                 }
             }
-            else if (ship == "PatrolBoat" || ship == "patrolboat" || ship == "p" || ship == "P")
+            else if (ship == 5)
             {
                 if (fromX == toX)
                 {
@@ -224,6 +239,7 @@ namespace Torpedó
                     }
                     else
                     {
+                        ForegroundColor = ConsoleColor.Red;
                         WriteLine("Balfasz");
                         Place();
                     }
@@ -237,12 +253,14 @@ namespace Torpedó
                     }
                     else
                     {
+                        ForegroundColor = ConsoleColor.Red;
                         WriteLine("Balfasz");
                         Place();
                     }
                 }
                 else
                 {
+                    ForegroundColor = ConsoleColor.Red;
                     WriteLine("Balfasz");
                     Place();
                 }
