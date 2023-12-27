@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static System.Console;
 
@@ -78,42 +80,144 @@ namespace Torpedó
                         Write("[" + row + "]");
                         row++;
                     }
-                    ForegroundColor = ConsoleColor.Blue;
-                    Console.Write("[~]");
+                    if (map[x,y] == 1)
+                    {
+                        ForegroundColor = ConsoleColor.DarkGreen;
+                        Console.Write("[O]");
+                    }
+                    else if (map[x, y] == 0)
+                    {
+                        ForegroundColor = ConsoleColor.Blue;
+                        Console.Write("[~]");
+                    }
                 }
 
                 Console.WriteLine();
             }
         }
 
+        public void Place(int[] ships, int[,] map, int ship, int[] coordinates)
+        {
 
-        public void Place()
+            // ha y = y akkor sor
+            // ha x = x akkor oszlop
+
+            int fx = coordinates[0];
+            int fy = coordinates[1];
+            int tx = coordinates[2];
+            int ty = coordinates[3];
+
+            bool exists = false;
+
+            if (ships[ship-1] > 0)
+            {          
+                if (fx == tx)
+                {
+                    for (int i = fy; i <= ty; i++)
+                    {
+                        if (map[fx, i] == 1)
+                        {
+                            exists = true;
+                        }
+                    }
+
+                    if (!exists)
+                    {
+                        for (int i = fy; i <= ty; i++)
+                        {
+                            map[fx, i] = 1;
+                        }
+                    }
+                    else
+                    {
+                        ForegroundColor = ConsoleColor.Red;
+                        WriteLine("Balfasz");
+                        Question(ships, map);
+                    }                   
+                }
+                else if (fy == ty)
+                {
+                    for (int i = fx; i <= tx; i++)
+                    {
+                        if (map[i, fy] == 1)
+                        {
+                            exists = true;
+                        }
+                    }
+
+                    if (!exists)
+                    {
+                        for (int i = fx; i <= tx; i++)
+                        {
+                            map[i, fy] = 1;
+                        }
+                    }
+                    else
+                    {
+                        ForegroundColor = ConsoleColor.Red;
+                        WriteLine("Balfasz");
+                        Question(ships, map);
+                    }
+                }
+                ships[ship - 1]--;
+            }
+            else
+            {
+                ForegroundColor = ConsoleColor.Red;
+                WriteLine("Balfasz");
+                Question(ships, map);
+            }
+        }
+
+        public void Question(int[] ships, int[,] map)
+        {
+            Thread.Sleep(500);
+            Clear();
+            PrintMap(map);
+
+            ForegroundColor = ConsoleColor.Cyan;
+            WriteLine("Add meg a hajó nevét! (Carrier(1), BattleShip(2), Destroyer(3), Submarine(4), PatrolBoat(5) )");
+            ForegroundColor = ConsoleColor.Gray;
+
+            int ship = Int32.Parse(ReadLine());
+
+            if (ship < 1 || ship > 5)
+            {
+                ForegroundColor = ConsoleColor.Red;
+                WriteLine("Balfasz");
+                Question(ships, map);
+            }
+            else if (ships[ship - 1] == 0)
+            {
+                ForegroundColor = ConsoleColor.Red;
+                WriteLine("Balfasz");
+                Question(ships, map);
+            }
+            else
+            {
+                Place_Command(ships, map, ship);
+            }
+        }
+
+        public void Place_Command(int[] ships, int[,] map, int ship)
         {
             //Carrier = 5
             //Battleship = 4
             //Destroyer = 3
             //Submarine = 3
             //PatrolBoat = 2
-
-            ForegroundColor = ConsoleColor.Cyan;
-            WriteLine("Add meg a hajó nevét! (Carrier(1), BattleShip(2), Destroyer(3), Submarine(4), PatrolBoat(5) )");
-            ForegroundColor = ConsoleColor.Gray;
-            int ship = Int32.Parse(ReadLine());
-            if (ship < 1 || ship > 5)
-            {
-                ForegroundColor = ConsoleColor.Red;
-                WriteLine("Balfasz");
-                Place();
-            }
             ForegroundColor = ConsoleColor.Cyan;
             WriteLine("Add meg, hogy mettől, meddig akarod lerakni!");
             ForegroundColor = ConsoleColor.Gray;
+
             string from = ReadLine();
             int fromX = mapCharToIntDict[from[0]];
             int fromY = Int32.Parse(from[1].ToString()) - 1;
             string to = ReadLine();
             int toX = mapCharToIntDict[to[0]];
             int toY = Int32.Parse(to[1].ToString()) - 1;
+
+            int[] coordinates = {fromX, fromY, toX, toY };
 
             ForegroundColor = ConsoleColor.Green;
 
@@ -123,6 +227,7 @@ namespace Torpedó
                 {
                     if (fromY - toY == 4 || fromY - toY == -4)
                     {
+                        Place(ships, map, ship, coordinates);
                         WriteLine("Nice");
                         //Be kell rakni a mapbe
                     }
@@ -130,13 +235,14 @@ namespace Torpedó
                     {
                         ForegroundColor = ConsoleColor.Red;
                         WriteLine("Balfasz");
-                        Place();
+                        Question(ships, map);
                     }
                 }
                 else if (fromY == toY)
                 {
                     if (fromX - toX == 4 || fromX - toX == -4)
                     {
+                        Place(ships, map, ship, coordinates);
                         WriteLine("Nice");
                         //Be kell rakni a mapbe
                     }
@@ -144,14 +250,14 @@ namespace Torpedó
                     {
                         ForegroundColor = ConsoleColor.Red;
                         WriteLine("Balfasz");
-                        Place();
+                        Question(ships, map);
                     }
                 }
                 else
                 {
                     ForegroundColor = ConsoleColor.Red;
                     WriteLine("Balfasz");
-                    Place();
+                    Question(ships, map);
                 }
             }
             else if (ship == 2)
@@ -160,6 +266,7 @@ namespace Torpedó
                 {
                     if (fromY - toY == 3 || fromY - toY == -3)
                     {
+                        Place(ships, map, ship, coordinates);
                         WriteLine("Nice");
                         //Be kell rakni a mapbe
                     }
@@ -167,13 +274,14 @@ namespace Torpedó
                     {
                         ForegroundColor = ConsoleColor.Red;
                         WriteLine("Balfasz");
-                        Place();
+                        Question(ships, map);
                     }
                 }
                 else if (fromY == toY)
                 {
                     if (fromX - toX == 3 || fromX - toX == -3)
                     {
+                        Place(ships, map, ship, coordinates);
                         WriteLine("Nice");
                         //Be kell rakni a mapbe
                     }
@@ -181,14 +289,14 @@ namespace Torpedó
                     {
                         ForegroundColor = ConsoleColor.Red;
                         WriteLine("Balfasz");
-                        Place();
+                        Question(ships, map);
                     }
                 }
                 else
                 {
                     ForegroundColor = ConsoleColor.Red;
                     WriteLine("Balfasz");
-                    Place();
+                    Question(ships, map);
                 }
             }
             else if (ship == 3 || ship == 4)
@@ -197,6 +305,7 @@ namespace Torpedó
                 {
                     if (fromY - toY == 2 || fromY - toY == -2)
                     {
+                        Place(ships, map, ship, coordinates);
                         WriteLine("Nice");
                         //Be kell rakni a mapbe
                     }
@@ -204,13 +313,14 @@ namespace Torpedó
                     {
                         ForegroundColor = ConsoleColor.Red;
                         WriteLine("Balfasz");
-                        Place();
+                        Question(ships, map);
                     }
                 }
                 else if (fromY == toY)
                 {
                     if (fromX - toX == 2 || fromX - toX == -2)
                     {
+                        Place(ships, map, ship, coordinates);
                         WriteLine("Nice");
                         //Be kell rakni a mapbe
                     }
@@ -218,14 +328,14 @@ namespace Torpedó
                     {
                         ForegroundColor = ConsoleColor.Red;
                         WriteLine("Balfasz");
-                        Place();
+                        Question(ships, map);
                     }
                 }
                 else
                 {
                     ForegroundColor = ConsoleColor.Red;
                     WriteLine("Balfasz");
-                    Place();
+                    Question(ships, map);
                 }
             }
             else if (ship == 5)
@@ -234,6 +344,7 @@ namespace Torpedó
                 {
                     if (fromY - toY == 1 || fromY - toY == -1)
                     {
+                        Place(ships, map, ship, coordinates);
                         WriteLine("Nice");
                         //Be kell rakni a mapbe
                     }
@@ -241,13 +352,14 @@ namespace Torpedó
                     {
                         ForegroundColor = ConsoleColor.Red;
                         WriteLine("Balfasz");
-                        Place();
+                        Question(ships, map);
                     }
                 }
                 else if (fromY == toY)
                 {
                     if (fromX - toX == 1 || fromX - toX == -1)
                     {
+                        Place(ships, map, ship, coordinates);
                         WriteLine("Nice");
                         //Be kell rakni a mapbe
                     }
@@ -255,29 +367,33 @@ namespace Torpedó
                     {
                         ForegroundColor = ConsoleColor.Red;
                         WriteLine("Balfasz");
-                        Place();
+                        Question(ships, map);
                     }
                 }
                 else
                 {
                     ForegroundColor = ConsoleColor.Red;
                     WriteLine("Balfasz");
-                    Place();
+                    Question(ships, map);
                 }
             }
         }
     }
     class Program
     {
-        private static int[,] map = new int[10, 10];
         static void Main(string[] args)
         {
+            int[,] Map = new int[10, 10];
+            int[] Ships = { 1, 1, 1, 1, 1 };
             Torpedo game = new Torpedo();
-            game.PrintMap(map);
+            game.PrintMap(Map);
 
-            for (int i = 0; i < 5; i++){
-                game.Place();
+            for (int i = 0; i < 5; i++)
+            {
+                game.Question(Ships, Map);
             }
+
+            game.PrintMap(Map);
         }
 
         
