@@ -443,7 +443,7 @@ namespace Torpedó
             //(Carrier(1), BattleShip(2), Destroyer(3), Submarine(4), PatrolBoat(5)
             int[] Ships = { 1, 1, 1, 1, 1 };
 
-            //A Torpedo osztályt "game"-ként "hozzuk" létre
+            //A Torpedo osztályt "game"-ként "hozzuk" lét re
             Torpedo game = new Torpedo();
 
             //Meghívjuk a "PrintMap" függvényt, ezzel kirajzolva a map-ot
@@ -457,8 +457,10 @@ namespace Torpedó
 
             //Valszeg ideiglenes megoldás az utolsó lehelyezett hajó megtekintéséhez.
             game.PrintMap(Map);
-        }
-
-        
+        }        
     }
 }
+
+
+//Bugok:
+//Nem lehet a 10-es oszlopban lehelyezni hajókat
