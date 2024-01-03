@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Torpedo
+namespace Torpedo_HowManyShips
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static void Main2(string[] args)
         {
             string res = howmanyShips(2, 5, 'A', 'F');
             Console.WriteLine(res);
