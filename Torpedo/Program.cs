@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Spectre.Console;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -66,24 +67,24 @@ namespace Torpedo
         // A térkép fejlécének kiírása (az oszlopok számai és az üres mező bal felső sarokban)
         static void PrintHeader()
         {
-            //Console színének a megváltoztatása
-            ForegroundColor = ConsoleColor.DarkYellow;
-            //Üres mező
-            Write("[ ]");
+
+            //Bal felül lévő ikon
+            AnsiConsole.Write(new Markup("[gold3_1]⚓ [/]"));
             //Számok 1-től 10-ig []-ben
             for (int i = 1; i < 11; i++)
-                Write("[" + i + "]");
+                //Custom color a kiíráshoz
+                AnsiConsole.Write(new Markup("[gold3_1][[" + i + "]][/]"));
             Write("     ");
-            Write("[ ]");
+            AnsiConsole.Write(new Markup("[gold3_1]💢 [/]"));
             for (int i = 1; i < 11; i++)
-                Write("[" + i + "]");
+                AnsiConsole.Write(new Markup("[gold3_1][[" + i + "]][/]"));
         }
 
         //A map kiírása
         public void PrintMap(int[,] map, int[,] aimap)
         {
 
-            bool visible = false;
+            bool visible = true;
 
             //Meghívjuk a Header függvényt, hogy az is meglegyen
             PrintHeader();
@@ -100,22 +101,19 @@ namespace Torpedo
                 {
                     //A sor 0. elemének a helyére beírjuk a már említett sorszámozást
                     if (y == 0)
-                    {
-                        ForegroundColor = ConsoleColor.DarkYellow;
-                        Write("[" + row1 + "]");
+                    {                       
+                        AnsiConsole.Write(new Markup("[gold3_1][[" + row1 + "]][/]"));
                         row1++;
                     }
                     //Ha lehelyeztünk egy hajót, akkor kirajzoljuk azt
                     if (map[x, y] == 1)
                     {
-                        ForegroundColor = ConsoleColor.DarkGreen;
-                        Console.Write("[O]");
+                        AnsiConsole.Write(new Markup("[green3][[O]][/]"));
                     }
                     //Ha nincs a mezőn hajó, akkor hullámot rajzolunk oda
                     else if (map[x, y] == 0)
                     {
-                        ForegroundColor = ConsoleColor.Blue;
-                        Console.Write("[~]");
+                        AnsiConsole.Write(new Markup("[navy][[~]][/]"));
                     }
                 }
 
@@ -125,8 +123,7 @@ namespace Torpedo
                     if (y == 0)
                     {
                         Write("      ");
-                        ForegroundColor = ConsoleColor.DarkYellow;
-                        Write("[" + row2 + "]");
+                        AnsiConsole.Write(new Markup("[gold3_1][[" + row2 + "]][/]"));
                         row2++;
                     }
                     //Ha lehelyeztünk egy hajót, akkor kirajzoljuk azt
@@ -134,20 +131,17 @@ namespace Torpedo
                     {
                         if (visible)
                         {
-                            ForegroundColor = ConsoleColor.DarkGreen;
-                            Console.Write("[O]");
+                            AnsiConsole.Write(new Markup("[red][[X]][/]"));
                         }
                         else
                         {
-                            ForegroundColor = ConsoleColor.Blue;
-                            Console.Write("[~]");
+                            AnsiConsole.Write(new Markup("[navy][[~]][/]"));
                         }
                     }
                     //Ha nincs a mezőn hajó, akkor hullámot rajzolunk oda
                     else if (aimap[x, y] == 0)
                     {
-                        ForegroundColor = ConsoleColor.Blue;
-                        Console.Write("[~]");
+                        AnsiConsole.Write(new Markup("[navy][[~]][/]"));
                     }
                 }
 
@@ -202,9 +196,8 @@ namespace Torpedo
                     }
                     //Ha egyik lehetőség se volt, az azt jelenti, hogy rossz a beírt koordináta, ezért újra bekérjük
                     else
-                    {
-                        ForegroundColor = ConsoleColor.Red;
-                        WriteLine("Balfasz");
+                    {                        
+                        AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
                         Question(ships, map, aimap);
                     }
                 }
@@ -229,8 +222,8 @@ namespace Torpedo
                     }
                     else
                     {
-                        ForegroundColor = ConsoleColor.Red;
-                        WriteLine("Balfasz");
+                        
+                        AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
                         Question(ships, map, aimap);
                     }
                 }
@@ -240,8 +233,8 @@ namespace Torpedo
             }
             else
             {
-                ForegroundColor = ConsoleColor.Red;
-                WriteLine("Balfasz");
+                
+                AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
                 Question(ships, map, aimap);
             }
         }
@@ -257,9 +250,9 @@ namespace Torpedo
             PrintMap(map,aimap);
 
 
-            ForegroundColor = ConsoleColor.Cyan;
-            WriteLine("Add meg a hajó nevét! (Carrier(1), BattleShip(2), Destroyer(3), Submarine(4), PatrolBoat(5) )");
-            ForegroundColor = ConsoleColor.Gray;
+           AnsiConsole.Write(new Markup("[cyan3]Add meg a hajó sorszámát! (1. Carrier(5), 2. BattleShip(4), 3. Destroyer(3), 4. Submarine(3), 5. PatrolBoat(2) )[/]"));
+            WriteLine(" ");
+            ForegroundColor = ConsoleColor.White;
 
             //"ship" változóként mentjük a bekért értéket
             int ship = Int32.Parse(ReadLine());       
@@ -267,15 +260,15 @@ namespace Torpedo
             //Leellenőrizzük, hogy hibás-e a megadott érték
             if (ship < 1 || ship > 5)
             {
-                ForegroundColor = ConsoleColor.Red;
-                WriteLine("Balfasz");
+                
+                AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
                 Question(ships, map, aimap);
             }
             //Leellenőrizzük, hogy a lehelyezni kívánt hajót lehelyeztük-e már
             else if (ships[ship - 1] == 0)
             {
-                ForegroundColor = ConsoleColor.Red;
-                WriteLine("Balfasz");
+                
+                AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
                 Question(ships, map, aimap);
             }
             //Ha helyes a beírt adat, akkor meghívjuk a "Coordinates" függvényt, ezzel tovább haladva a bekérdezéssel
@@ -294,10 +287,10 @@ namespace Torpedo
             //Submarine = 3
             //PatrolBoat = 2
 
-            ForegroundColor = ConsoleColor.Cyan;
-            WriteLine("Add meg, a hajó kezdőponti és végponti koordinátáit!" + Environment.NewLine
-                + "(Fontos hogy ELŐSSZÖR A KEZDŐ koordinátát adjuk meg, UTÁNA AZ UTOLSÓ koordinátát!!!)");
-            ForegroundColor = ConsoleColor.Gray;
+            AnsiConsole.Write(new Markup("[cyan3]Add meg, a hajó kezdőponti és végponti koordinátáit!" + Environment.NewLine
+                + "(Fontos hogy ELŐSZÖR A KEZDŐ koordinátát adjuk meg, UTÁNA AZ UTOLSÓ koordinátát!!!)[/]"));
+            WriteLine(" ");
+            ForegroundColor = ConsoleColor.White;
 
             //Bekérjük a két értéket, majd átkonvertáljuk amit kell int típussá és szétbontjuk a stringet "karakterekre", az az számokra
             string from = ReadLine();
@@ -324,16 +317,14 @@ namespace Torpedo
                     if (fromY - toY == 4 || fromY - toY == -4)
                     {
                         //Meghívjuk a "Place" függvényt és nyugtázzuk a sikeres a lehelyezést egy "Nice"-al
-                        Place(ships, map, aimap, ship, coordinates);
-                        ForegroundColor = ConsoleColor.Green;
-                        WriteLine("Nice");
+                        Place(ships, map, aimap, ship, coordinates);                        
+                        AnsiConsole.Write(new Markup("[green1]Nice[/]"));
                     }
                     //Már ezt is leírtam fentebb.
                     //Hányszor mondjam még el?
                     else
-                    {
-                        ForegroundColor = ConsoleColor.Red;
-                        WriteLine("Balfasz");
+                    {                        
+                        AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
                         Question(ships, map, aimap);
                     }
                 }
@@ -342,21 +333,18 @@ namespace Torpedo
                 {
                     if (fromX - toX == 4 || fromX - toX == -4)
                     {
-                        Place(ships, map, aimap, ship, coordinates);
-                        ForegroundColor = ConsoleColor.Green;
-                        WriteLine("Nice");
+                        Place(ships, map, aimap, ship, coordinates);                        
+                        AnsiConsole.Write(new Markup("[green1]Nice[/]"));
                     }
                     else
-                    {
-                        ForegroundColor = ConsoleColor.Red;
-                        WriteLine("Balfasz");
+                    {                        
+                        AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
                         Question(ships, map, aimap);
                     }
                 }
                 else
-                {
-                    ForegroundColor = ConsoleColor.Red;
-                    WriteLine("Balfasz");
+                {                    
+                    AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
                     Question(ships, map, aimap);
                 }
             }
@@ -367,14 +355,12 @@ namespace Torpedo
                 {
                     if (fromY - toY == 3 || fromY - toY == -3)
                     {
-                        Place(ships, map, aimap, ship, coordinates);
-                        ForegroundColor = ConsoleColor.Green;
-                        WriteLine("Nice");
+                        Place(ships, map, aimap, ship, coordinates);                        
+                        AnsiConsole.Write(new Markup("[green1]Nice[/]"));
                     }
                     else
-                    {
-                        ForegroundColor = ConsoleColor.Red;
-                        WriteLine("Balfasz");
+                    {                        
+                        AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
                         Question(ships, map, aimap);
                     }
                 }
@@ -382,21 +368,18 @@ namespace Torpedo
                 {
                     if (fromX - toX == 3 || fromX - toX == -3)
                     {
-                        Place(ships, map, aimap, ship, coordinates);
-                        ForegroundColor = ConsoleColor.Green;
-                        WriteLine("Nice");
+                        Place(ships, map, aimap, ship, coordinates);                        
+                        AnsiConsole.Write(new Markup("[green1]Nice[/]"));
                     }
                     else
-                    {
-                        ForegroundColor = ConsoleColor.Red;
-                        WriteLine("Balfasz");
+                    {                        
+                        AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
                         Question(ships, map, aimap);
                     }
                 }
                 else
-                {
-                    ForegroundColor = ConsoleColor.Red;
-                    WriteLine("Balfasz");
+                {                    
+                    AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
                     Question(ships, map, aimap);
                 }
             }
@@ -406,14 +389,12 @@ namespace Torpedo
                 {
                     if (fromY - toY == 2 || fromY - toY == -2)
                     {
-                        Place(ships, map, aimap, ship, coordinates);
-                        ForegroundColor = ConsoleColor.Green;
-                        WriteLine("Nice");
+                        Place(ships, map, aimap, ship, coordinates);                        
+                        AnsiConsole.Write(new Markup("[green1]Nice[/]"));
                     }
                     else
-                    {
-                        ForegroundColor = ConsoleColor.Red;
-                        WriteLine("Balfasz");
+                    {                        
+                        AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
                         Question(ships, map, aimap);
                     }
                 }
@@ -421,21 +402,18 @@ namespace Torpedo
                 {
                     if (fromX - toX == 2 || fromX - toX == -2)
                     {
-                        Place(ships, map, aimap, ship, coordinates);
-                        ForegroundColor = ConsoleColor.Green;
-                        WriteLine("Nice");
+                        Place(ships, map, aimap, ship, coordinates);                        
+                        AnsiConsole.Write(new Markup("[green1]Nice[/]"));
                     }
                     else
-                    {
-                        ForegroundColor = ConsoleColor.Red;
-                        WriteLine("Balfasz");
+                    {                        
+                        AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
                         Question(ships, map, aimap);
                     }
                 }
                 else
-                {
-                    ForegroundColor = ConsoleColor.Red;
-                    WriteLine("Balfasz");
+                {                    
+                    AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
                     Question(ships, map, aimap);
                 }
             }
@@ -445,14 +423,12 @@ namespace Torpedo
                 {
                     if (fromY - toY == 1 || fromY - toY == -1)
                     {
-                        Place(ships, map, aimap, ship, coordinates);
-                        ForegroundColor = ConsoleColor.Green;
-                        WriteLine("Nice");
+                        Place(ships, map, aimap, ship, coordinates);                        
+                        AnsiConsole.Write(new Markup("[green1]Nice[/]"));
                     }
                     else
-                    {
-                        ForegroundColor = ConsoleColor.Red;
-                        WriteLine("Balfasz");
+                    {                        
+                        AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
                         Question(ships, map, aimap);
                     }
                 }
@@ -460,21 +436,18 @@ namespace Torpedo
                 {
                     if (fromX - toX == 1 || fromX - toX == -1)
                     {
-                        Place(ships, map, aimap, ship, coordinates);
-                        ForegroundColor = ConsoleColor.Green;
-                        WriteLine("Nice");
+                        Place(ships, map, aimap, ship, coordinates);                        
+                        AnsiConsole.Write(new Markup("[green1]Nice[/]"));
                     }
                     else
-                    {
-                        ForegroundColor = ConsoleColor.Red;
-                        WriteLine("Balfasz");
+                    {                        
+                        AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
                         Question(ships, map, aimap);
                     }
                 }
                 else
-                {
-                    ForegroundColor = ConsoleColor.Red;
-                    WriteLine("Balfasz");
+                {                    
+                    AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
                     Question(ships, map, aimap);
                 }
             }
