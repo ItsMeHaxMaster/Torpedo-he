@@ -261,19 +261,8 @@ namespace Torpedo
             WriteLine("Add meg a hajó nevét! (Carrier(1), BattleShip(2), Destroyer(3), Submarine(4), PatrolBoat(5) )");
             ForegroundColor = ConsoleColor.Gray;
 
-            int ship = 0;
-
-            try
-            {
-                //"ship" változóként mentjük a bekért értéket
-                ship = Int32.Parse(ReadLine());
-            }
-            catch
-            {
-                ForegroundColor = ConsoleColor.Red;
-                WriteLine("Balfasz");
-                Question(ships, map, aimap);
-            }
+            //"ship" változóként mentjük a bekért értéket
+            int ship = Int32.Parse(ReadLine());       
 
             //Leellenőrizzük, hogy hibás-e a megadott érték
             if (ship < 1 || ship > 5)
