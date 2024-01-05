@@ -115,11 +115,11 @@ namespace Torpedo
                     {
                         AnsiConsole.Write(new Markup("[navy][[~]][/]"));
                     }
-                    else if (aimap[x, y] == -1)
+                    else if (map[x, y] == -1)
                     {
                         AnsiConsole.Write(new Markup("[black][[~]][/]"));
                     }
-                    else if (aimap[x, y] == -2)
+                    else if (map[x, y] == -2)
                     {
                         AnsiConsole.Write(new Markup("[maroon][[*]][/]"));
                     }
@@ -177,6 +177,8 @@ namespace Torpedo
             int fy = coordinates[1];
             int tx = coordinates[2];
             int ty = coordinates[3];
+
+            FriendlyShipsCoords.Add(fx + ";" + fy + ";" + tx + ";" + ty);
 
             //Bool változó létrehozása, arra, hogyha már van a mezőn hajó lehelyezve, azt jelezze
             bool exists = false;
@@ -472,7 +474,7 @@ namespace Torpedo
 
         public void Shoot(int[,] map, int[,] aimap)
         {
-            Thread.Sleep(800);
+            Thread.Sleep(1000);
             Clear();
             PrintMap(map, aimap);
 
@@ -516,6 +518,7 @@ namespace Torpedo
 
         }
 
+
         public void Sink(int[,] aimap)
         {
             //fromX = [0]
@@ -525,11 +528,11 @@ namespace Torpedo
 
             string[][] ships = new string[5][];
 
-            ships[0] = EnemyShipCoords[0].ToString().Split(';');
-            ships[1] = EnemyShipCoords[1].ToString().Split(';');
-            ships[2] = EnemyShipCoords[2].ToString().Split(';');
-            ships[3] = EnemyShipCoords[3].ToString().Split(';');
-            ships[4] = EnemyShipCoords[4].ToString().Split(';');
+            ships[0] = EnemyShipsCoords[0].ToString().Split(';');
+            ships[1] = EnemyShipsCoords[1].ToString().Split(';');
+            ships[2] = EnemyShipsCoords[2].ToString().Split(';');
+            ships[3] = EnemyShipsCoords[3].ToString().Split(';');
+            ships[4] = EnemyShipsCoords[4].ToString().Split(';');
 
 
             int[][] intShips = new int[5][];
@@ -540,7 +543,6 @@ namespace Torpedo
 
                 for (int j = 0; j < ships[i].Length; j++)
                 {
-                    Console.WriteLine(ships[i][j]);
                     thisInt[j] = Int32.Parse(ships[i][j]);
                 }
 
@@ -559,100 +561,317 @@ namespace Torpedo
             int Sub = 0;
             int Pat = 0;
 
-                           //*
 
-            if (Carrier[0] == Carrier[2])
+                            //*
+
+            if (!sinkc)
             {
-                for (int i = Carrier[1]; i <= Carrier[3]; i++)
-                    if (aimap[i, Carrier[0]] == -2)
-                        Car++;
+                if (Carrier[0] == Carrier[2])
+                {
+                    for (int i = Carrier[1]; i <= Carrier[3]; i++)
+                        if (aimap[i, Carrier[0]] == -2)
+                            Car++;
+                }
+                else if (Carrier[1] == Carrier[3])
+                {
+                    for (int i = Carrier[0]; i <= Carrier[2]; i++)
+                        if (aimap[Carrier[1], i] == -2)
+                            Car++;
+                }
             }
-            else if (Carrier[1] == Carrier[3])
+
+            if (!sinkb)
             {
-                for (int i = Carrier[0]; i <= Carrier[2]; i++)
-                    if (aimap[Carrier[1], i] == -2)
-                        Car++;
+                if (BattleShip[0] == BattleShip[2])
+                {
+                    for (int i = BattleShip[1]; i <= BattleShip[3]; i++)
+                        if (aimap[i, BattleShip[0]] == -2)
+                            Bat++;
+                }
+                else if (BattleShip[1] == BattleShip[3])
+                {
+                    for (int i = BattleShip[0]; i <= BattleShip[2]; i++)
+                        if (aimap[BattleShip[1], i] == -2)
+                            Bat++;
+                }
             }
-            else if (BattleShip[0] == BattleShip[2])
+
+            if (!sinkd)
             {
-                for (int i = BattleShip[1]; i <= BattleShip[3]; i++)
-                    if (aimap[i, BattleShip[0]] == -2)
-                        Bat++;
+                if (Destroyer[0] == Destroyer[2])
+                {
+                    for (int i = Destroyer[1]; i <= Destroyer[3]; i++)
+                        if (aimap[i, Destroyer[0]] == -2)
+                            Des++;
+                }
+                else if (Destroyer[1] == Destroyer[3])
+                {
+                    for (int i = Submarine[0]; i <= Submarine[2]; i++)
+                        if (aimap[Submarine[1], i] == -2)
+                            Des++;
+                }
             }
-            else if (BattleShip[1] == BattleShip[3])
+
+            if (!sinks)
             {
-                for (int i = BattleShip[0]; i <= BattleShip[2]; i++)
-                    if (aimap[BattleShip[1], i] == -2)
-                        Bat++;
+                if (Submarine[0] == Submarine[2])
+                {
+                    for (int i = Submarine[1]; i <= Submarine[3]; i++)
+                        if (aimap[i, Submarine[0]] == -2)
+                            Sub++;
+                }
+                else if (Submarine[1] == Submarine[3])
+                {
+                    for (int i = Submarine[0]; i <= Submarine[2]; i++)
+                        if (aimap[Submarine[1], i] == -2)
+                            Sub++;
+                }
             }
-            else if (Destroyer[0] == Destroyer[2])
+
+            if (!sinkp)
             {
-                for (int i = Destroyer[1]; i <= Destroyer[3]; i++)
-                    if (aimap[i, Destroyer[0]] == -2)
-                        Des++;
-            }
-            else if (Submarine[1] == Submarine[3])
-            {
-                for (int i = Submarine[0]; i <= Submarine[2]; i++)
-                    if (aimap[Submarine[1], i] == -2)
-                        Des++;
-            }
-            else if (Submarine[0] == Submarine[2])
-            {
-                for (int i = Submarine[1]; i <= Submarine[3]; i++)
-                    if (aimap[i, Submarine[0]] == -2)
-                        Sub++;
-            }
-            else if (Submarine[1] == Submarine[3])
-            {
-                for (int i = Submarine[0]; i <= Submarine[2]; i++)
-                    if (aimap[Submarine[1], i] == -2)
-                        Sub++;
-            }
-            else if (PatrolBoat[0] == PatrolBoat[2])
-            {
-                for (int i = PatrolBoat[1]; i <= PatrolBoat[3]; i++)
-                    if (aimap[i, PatrolBoat[0]] == -2)
-                        Sub++;
-            }
-            else if (PatrolBoat[1] == PatrolBoat[3])
-            {
-                for (int i = PatrolBoat[0]; i <= PatrolBoat[2]; i++)
-                    if (aimap[PatrolBoat[1], i] == -2)
-                        Sub++;
+                if (PatrolBoat[0] == PatrolBoat[2])
+                {
+                    for (int i = PatrolBoat[1]; i <= PatrolBoat[3]; i++)
+                        if (aimap[i, PatrolBoat[0]] == -2)
+                            Sub++;
+                }
+                else if (PatrolBoat[1] == PatrolBoat[3])
+                {
+                    for (int i = PatrolBoat[0]; i <= PatrolBoat[2]; i++)
+                        if (aimap[PatrolBoat[1], i] == -2)
+                            Sub++;
+                }
             }
 
 
             if (Car == 5)
             {
                 AnsiConsole.Write(new Markup("[greenyellow]Az ellenség Repülőgép-hordozója elsüllyedt![/]"));
+                sinkc = true;
             }
            
             if (Bat == 4)
             {
                 AnsiConsole.Write(new Markup("[greenyellow]Az ellenség Csatahajója elsüllyedt![/]"));
+                sinkb = true;
             }
 
             if (Des == 3)
             {
                 AnsiConsole.Write(new Markup("[greenyellow]Az ellenség Rombolója elsüllyedt![/]"));
+                sinkd = true;
             }
 
             if (Sub == 3)
             {
                 AnsiConsole.Write(new Markup("[greenyellow]Az ellenség Tengeralattjárója elsüllyedt![/]"));
+                sinks = true;
             }
 
             if (Pat == 2)
             {
                 AnsiConsole.Write(new Markup("[greenyellow]Az ellenség Járőrhajója elsüllyedt![/]"));
+                sinkp = true;
+            }
+
+        }
+
+        public void AI_Shoot(int[,] map, int[,] aimap)
+        {
+            Thread.Sleep(1000);
+            Clear();
+            PrintMap(map, aimap);
+
+            Random rnd = new Random();
+
+            //Első random kulcs - értékek létreholzása
+            int shootRow = rnd.Next(0, 9);
+            int shootCol = rnd.Next(0, 9);
+
+            //Ha már létezik egy elem a szótárban akkor a következő random
+            //elemet nem adjuk hozzá, ha még nem létezik akkor hozzáadjuk
+            while (map[shootRow,shootCol] < 0)
+            {
+                //Random kulcs - érték pár létrehozása addig, amíg nem hozunk létre egy olyat ahova még nem lőttünk.
+                shootRow = rnd.Next(1, 11);
+                shootCol = rnd.Next(1, 11);
+            }
+
+            if (map[shootRow, shootCol] == 1)
+            {
+                map[shootRow, shootCol] = -2;
+                AnsiConsole.Write(new Markup("[maroon]Az ellenség eltalálta az egyik hajódat![/]"));
+                AI_Sink(map);
+            }
+            else
+            {
+                map[shootRow, shootCol] = -1;
+                AnsiConsole.Write(new Markup("[grey58]Az ellenség lövése nem talált![/]"));
+            }
+        }
+
+        public void AI_Sink(int[,] aimap)
+        {
+            //fromX = [0]
+            //fromY = [1]
+            //toX = [2]
+            //toY = [3]
+
+            string[][] ships = new string[5][];
+
+            ships[0] = FriendlyShipsCoords[0].ToString().Split(';');
+            ships[1] = FriendlyShipsCoords[1].ToString().Split(';');
+            ships[2] = FriendlyShipsCoords[2].ToString().Split(';');
+            ships[3] = FriendlyShipsCoords[3].ToString().Split(';');
+            ships[4] = FriendlyShipsCoords[4].ToString().Split(';');
+
+
+            int[][] intShips = new int[5][];
+
+            for (int i = 0; i < ships.Length; i++)
+            {
+                int[] thisInt = new int[4];
+
+                for (int j = 0; j < ships[i].Length; j++)
+                {
+                    thisInt[j] = Int32.Parse(ships[i][j]);
+                }
+
+                intShips[i] = thisInt;
+            }
+
+            int[] Carrier = intShips[0];
+            int[] BattleShip = intShips[1];
+            int[] Destroyer = intShips[2];
+            int[] Submarine = intShips[3];
+            int[] PatrolBoat = intShips[4];
+
+            int Car = 0;
+            int Bat = 0;
+            int Des = 0;
+            int Sub = 0;
+            int Pat = 0;
+
+
+            //*
+
+            if (!sinkc)
+            {
+                if (Carrier[0] == Carrier[2])
+                {
+                    for (int i = Carrier[1]; i <= Carrier[3]; i++)
+                        if (aimap[i, Carrier[0]] == -2)
+                            Car++;
+                }
+                else if (Carrier[1] == Carrier[3])
+                {
+                    for (int i = Carrier[0]; i <= Carrier[2]; i++)
+                        if (aimap[Carrier[1], i] == -2)
+                            Car++;
+                }
+            }
+
+            if (!sinkb)
+            {
+                if (BattleShip[0] == BattleShip[2])
+                {
+                    for (int i = BattleShip[1]; i <= BattleShip[3]; i++)
+                        if (aimap[i, BattleShip[0]] == -2)
+                            Bat++;
+                }
+                else if (BattleShip[1] == BattleShip[3])
+                {
+                    for (int i = BattleShip[0]; i <= BattleShip[2]; i++)
+                        if (aimap[BattleShip[1], i] == -2)
+                            Bat++;
+                }
+            }
+
+            if (!sinkd)
+            {
+                if (Destroyer[0] == Destroyer[2])
+                {
+                    for (int i = Destroyer[1]; i <= Destroyer[3]; i++)
+                        if (aimap[i, Destroyer[0]] == -2)
+                            Des++;
+                }
+                else if (Destroyer[1] == Destroyer[3])
+                {
+                    for (int i = Submarine[0]; i <= Submarine[2]; i++)
+                        if (aimap[Submarine[1], i] == -2)
+                            Des++;
+                }
+            }
+
+            if (!sinks)
+            {
+                if (Submarine[0] == Submarine[2])
+                {
+                    for (int i = Submarine[1]; i <= Submarine[3]; i++)
+                        if (aimap[i, Submarine[0]] == -2)
+                            Sub++;
+                }
+                else if (Submarine[1] == Submarine[3])
+                {
+                    for (int i = Submarine[0]; i <= Submarine[2]; i++)
+                        if (aimap[Submarine[1], i] == -2)
+                            Sub++;
+                }
+            }
+
+            if (!sinkp)
+            {
+                if (PatrolBoat[0] == PatrolBoat[2])
+                {
+                    for (int i = PatrolBoat[1]; i <= PatrolBoat[3]; i++)
+                        if (aimap[i, PatrolBoat[0]] == -2)
+                            Sub++;
+                }
+                else if (PatrolBoat[1] == PatrolBoat[3])
+                {
+                    for (int i = PatrolBoat[0]; i <= PatrolBoat[2]; i++)
+                        if (aimap[PatrolBoat[1], i] == -2)
+                            Sub++;
+                }
+            }
+
+
+            if (Car == 5)
+            {
+                AnsiConsole.Write(new Markup("[greenyellow]A Repülőgép-hordozód elsüllyedt![/]"));
+                sinkc = true;
+            }
+
+            if (Bat == 4)
+            {
+                AnsiConsole.Write(new Markup("[greenyellow]A Csatahajód elsüllyedt![/]"));
+                sinkb = true;
+            }
+
+            if (Des == 3)
+            {
+                AnsiConsole.Write(new Markup("[greenyellow]A Rombolód elsüllyedt![/]"));
+                sinkd = true;
+            }
+
+            if (Sub == 3)
+            {
+                AnsiConsole.Write(new Markup("[greenyellow]A Tengeralattjáród elsüllyedt![/]"));
+                sinks = true;
+            }
+
+            if (Pat == 2)
+            {
+                AnsiConsole.Write(new Markup("[greenyellow]A Járőrhajód elsüllyedt![/]"));
+                sinkp = true;
             }
 
         }
 
 
-//--------------------------------------------------------------------------------------------------------------------------------------
-//Beni kódja:
+        //--------------------------------------------------------------------------------------------------------------------------------------
+        //Beni kódja:
 
         static void Ai_Random()
         {
@@ -704,6 +923,60 @@ namespace Torpedo
                     }
                 }
             }
+        }
+
+        //static void Main(string[] args)
+        //{
+        //    //Szemléltetés / szimuláció: feltételezzük, hogy a következő lépést a gép végzi.
+        //    //Tehát a függvény csak addig fut le amíg ez az érték igaz.
+        //    //Ez az érték akkor lehet false, ha a játékosé a következő lépés.
+        //    bool nextStep = true;
+        //}
+        public Dictionary<char, int> GenerateEnemyShoot(bool nextStap)
+        {
+
+            //Szótár létrehozása az ellenfél lövésének
+            Dictionary<char, int> enemyShoots = new Dictionary<char, int>();
+
+            if (nextStap == true)
+            {
+                Random rnd = new Random();
+
+                //Első random kulcs - értékek létreholzása
+                char shootChar = (char)('A' + rnd.Next(10));
+                int shootNum = rnd.Next(1, 11);
+
+                //Random értékek hozzáadása a szótárhoz
+                enemyShoots.Add(shootChar, shootNum);
+
+                //Vizsgálat benne van e a kulcs - érték pár a szótárban
+                bool canaddChar = enemyShoots.ContainsKey(shootChar);
+                bool canaddNum = enemyShoots.ContainsValue(shootNum);
+
+                //Ha már létezik egy elem a szótárban akkor a következő random
+                //elemet nem adjuk hozzá, ha még nem létezik akkor hozzáadjuk
+                while (canaddChar && canaddNum != true)
+                {
+
+                    //Random kulcs - érték pár létrehozása addig, amíg nem bírjuk hozzáadni az előzőt.
+                    shootChar = (char)('A' + rnd.Next(10));
+                    shootNum = rnd.Next(1, 11);
+
+                    //Random értékek hozzáadása a szótárhoz
+                    enemyShoots.Add(shootChar, shootNum);
+
+                    //Vizsgálat benne van e a kulcs - érték pár a szótárban
+                    canaddChar = enemyShoots.ContainsKey(shootChar);
+                    canaddNum = enemyShoots.ContainsValue(shootNum);
+                }
+
+            }
+            else
+            {
+                Console.WriteLine("A játékos következik!");
+            }
+            //Szótár a függvény visszatérése!!
+            return enemyShoots;
         }
 
         //--------------------------------------------------------------------------------------------------------------------------------------
@@ -812,7 +1085,7 @@ namespace Torpedo
             int toX = coords[2];
             int toY = coords[3];
 
-            EnemyShipCoords.Add(fromX + ";" + fromY + ";" + toX + ";" + toY);
+            EnemyShipsCoords.Add(fromX + ";" + fromY + ";" + toX + ";" + toY);            
 
             if (fromX == toX)
             {
@@ -829,7 +1102,14 @@ namespace Torpedo
 
         //--------------------------------------------------------------------------------------------------------------------------------------      
 
-        ArrayList EnemyShipCoords = new ArrayList();
+        ArrayList EnemyShipsCoords = new ArrayList();
+        ArrayList FriendlyShipsCoords = new ArrayList();
+
+        bool sinkc = false;
+        bool sinkb = false;
+        bool sinkd = false;
+        bool sinks = false;
+        bool sinkp = false;
 
     }
 
@@ -861,13 +1141,14 @@ namespace Torpedo
             game.AIGenerate(AI_Map);
 
             //Meghívjuk 5-ször a "Question" függvényt, ezzel elindítva a bekérdezést és a játékot is
-            //for (int i = 0; i < 5; i++)
-            //{
-            //    game.Question(Ships, Map, AI_Map);
-            //}
+            for (int i = 0; i < 5; i++)
+            {
+                game.Question(Ships, Map, AI_Map);
+            }
 
             while (true){
                 game.Shoot(Map, AI_Map);
+                game.AI_Shoot(Map, AI_Map);
             }
         }
     }
