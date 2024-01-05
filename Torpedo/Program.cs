@@ -483,8 +483,8 @@ namespace Torpedo
             string target = ReadLine();
 
             int targetX = mapCharToIntDict[target[0]];
-            string a = target.Replace(target[0], ' ');
-            int targetY = Int32.Parse(a) - 1;
+            //string a = target.Replace(target[0], ' ');
+            int targetY = Int32.Parse(target[1].ToString()) - 1;
 
             bool shot = false;
             
@@ -523,13 +523,14 @@ namespace Torpedo
             //toX = [2]
             //toY = [3]
 
-            string[][] ships = {
-                EnemyShipCoords[0].ToString().Split(';'),
-                EnemyShipCoords[1].ToString().Split(';'),
-                EnemyShipCoords[2].ToString().Split(';'),
-                EnemyShipCoords[3].ToString().Split(';'),
-                EnemyShipCoords[4].ToString().Split(';')
-            };
+            string[][] ships = new string[5][];
+
+            ships[0] = EnemyShipCoords[0].ToString().Split(';');
+            ships[1] = EnemyShipCoords[1].ToString().Split(';');
+            ships[2] = EnemyShipCoords[2].ToString().Split(';');
+            ships[3] = EnemyShipCoords[3].ToString().Split(';');
+            ships[4] = EnemyShipCoords[4].ToString().Split(';');
+
 
             int[][] intShips = new int[5][];
 
@@ -811,7 +812,7 @@ namespace Torpedo
             int toX = coords[2];
             int toY = coords[3];
 
-            EnemyShipCoords.Add(fromX + ";" + fromY + ";" + toX + ";" + toY + ";");
+            EnemyShipCoords.Add(fromX + ";" + fromY + ";" + toX + ";" + toY);
 
             if (fromX == toX)
             {
