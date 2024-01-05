@@ -65,7 +65,7 @@ namespace Torpedo
         };
 
         // A térkép fejlécének kiírása (az oszlopok számai és az üres mező bal felső sarokban)
-        static void PrintHeader()
+        public void PrintHeader()
         {
 
             //Bal felül lévő ikon
@@ -261,9 +261,12 @@ namespace Torpedo
         //mert így nem a "Coordinates" függvényt kell meghívnunk, ha rossz a bekért adat, és nem akad össze a már futó "Coordinates" függvénnyel.
         public void Question(int[] ships, int[,] map, int[,] aimap)
         {
-            //Várunk fél másodpercet a kiírt szöveg törlésével, majd töröljük, és meghívjukk a "PrintMap" függvényt,
+            //Várunk 1 másodpercet a kiírt szöveg törlésével, vagy várunk egy gomb megnyomására, majd töröljük a konzolt, és meghívjukk a "PrintMap" függvényt,
             //ezzel frissítve a térképet a lehelyezett hajókkal
-            Thread.Sleep(500);
+            if (manual)
+                ReadKey();
+            else if (manual == false)
+                Thread.Sleep(1000);
             Clear();
             PrintMap(map, aimap);
 
@@ -272,29 +275,38 @@ namespace Torpedo
             WriteLine(" ");
             ForegroundColor = ConsoleColor.White;
 
-
-            //"ship" változóként mentjük a bekért értéket
-            int ship = Int32.Parse(ReadLine());
-
-            //Leellenőrizzük, hogy hibás-e a megadott érték
-            if (ship < 1 || ship > 5)
+            try
             {
+                //"ship" változóként mentjük a bekért értéket
+                int ship = Int32.Parse(ReadLine());
 
+                //Leellenőrizzük, hogy hibás-e a megadott érték
+                if (ship < 1 || ship > 5)
+                {
+
+                    AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
+                    Question(ships, map, aimap);
+                }
+                //Leellenőrizzük, hogy a lehelyezni kívánt hajót lehelyeztük-e már
+                else if (ships[ship - 1] == 0)
+                {
+
+                    AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
+                    Question(ships, map, aimap);
+                }
+                //Ha helyes a beírt adat, akkor meghívjuk a "Coordinates" függvényt, ezzel tovább haladva a bekérdezéssel
+                else
+                {
+                    Coordinates(ships, map, aimap, ship);
+                }
+            }
+            catch
+            {
                 AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
                 Question(ships, map, aimap);
             }
-            //Leellenőrizzük, hogy a lehelyezni kívánt hajót lehelyeztük-e már
-            else if (ships[ship - 1] == 0)
-            {
 
-                AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
-                Question(ships, map, aimap);
-            }
-            //Ha helyes a beírt adat, akkor meghívjuk a "Coordinates" függvényt, ezzel tovább haladva a bekérdezéssel
-            else
-            {
-                Coordinates(ships, map, aimap, ship);
-            }
+
         }
 
         //Lértehozzuk a "Coordinates" függvényt, a koordináták bekérdezésére és a hajóhosszúság ellenőrzésére
@@ -311,16 +323,82 @@ namespace Torpedo
             WriteLine(" ");
             ForegroundColor = ConsoleColor.White;
 
-            //Bekérjük a két értéket, majd átkonvertáljuk amit kell int típussá és szétbontjuk a stringet "karakterekre", az az számokra
-            string from = ReadLine();
-            //Hasznájuk a már korábban létrehozott könyvtárat, hogy a betűket számmá alakítsuk
-            int fromX = mapCharToIntDict[from[0]];
-            string a = from.Replace(from[0], ' ');
-            int fromY = Int32.Parse(a) - 1;
-            string to = ReadLine();
-            int toX = mapCharToIntDict[to[0]];
-            string b = to.Replace(to[0], ' ');
-            int toY = Int32.Parse(b) - 1;
+            bool bajvanmore = true;
+            int fromX = 0;
+            string a = "a";
+            int fromY = 0;
+            int toX = 0;
+            int toY = 0;
+            string b = "b";
+
+
+            while (bajvanmore)
+            {
+                //Bekérjük a két értéket, majd átkonvertáljuk amit kell int típussá és szétbontjuk a stringet "karakterekre", az az számokra
+                string from = ReadLine().ToUpper();
+            
+                if (from.Length! < 2 || from.Length! > 4)
+                {
+                    AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
+                }
+
+                if (!chars.Contains(from[0]))
+                {
+                    AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
+                }
+
+                fromX = mapCharToIntDict[from[0]];
+                a = from.Remove(0, 1);
+
+                try
+                {
+                    if (Int32.Parse(a.ToString()) > 10 || Int32.Parse(a.ToString()) < 1)
+                    {
+                        AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
+                    }
+                }
+                catch
+                {
+                    AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
+                }
+
+                fromY = Int32.Parse(a.ToString()) - 1;
+
+                //----------------------------------------------------------------------
+
+                string to = ReadLine().ToUpper();
+
+                if (from.Length! < 2 || from.Length! > 4)
+                {
+                    AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
+                }
+
+                if (!chars.Contains(from[0]))
+                {
+                    AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
+                }
+
+                toX = mapCharToIntDict[from[0]];
+                b = to.Remove(0, 1);
+
+
+                try
+                {
+                    if (Int32.Parse(b.ToString()) > 10 || Int32.Parse(b.ToString()) < 1)
+                    {
+                        AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
+                    }
+                }
+                catch
+                {
+                    AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
+                }
+
+                toY = Int32.Parse(b) - 1;
+
+                bajvanmore = false;
+            }
+
 
             //A létrejött int változókat egy tömbbe rakjuk, hogy könnyen tudjuk használni a place függvényben is
             int[] coordinates = { fromX, fromY, toX, toY };
@@ -474,7 +552,10 @@ namespace Torpedo
 
         public void Shoot(int[,] map, int[,] aimap)
         {
-            Thread.Sleep(1000);
+            if (manual)
+                ReadKey();
+            else if (manual == false)
+                Thread.Sleep(1000);
             Clear();
             PrintMap(map, aimap);
 
@@ -482,11 +563,40 @@ namespace Torpedo
             WriteLine(" ");
             ForegroundColor = ConsoleColor.White;
 
-            string target = ReadLine();
+            string target = ReadLine().ToUpper();
+
+
+            if (target.Length !< 2 || target.Length !> 4)
+            {
+                AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
+                Shoot(map, aimap);
+                return;
+            }
+            
+            if (!chars.Contains(target[0]))
+            {
+                AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
+                Shoot(map, aimap);
+            }
 
             int targetX = mapCharToIntDict[target[0]];
-            //string a = target.Replace(target[0], ' ');
-            int targetY = Int32.Parse(target[1].ToString()) - 1;
+            string a = target.Remove(0, 1);
+
+            try
+            {
+                if (Int32.Parse(a.ToString()) > 10 || Int32.Parse(a.ToString()) < 1)
+                {
+                    AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
+                    Shoot(map, aimap);
+                }
+            }
+            catch
+            {
+                AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
+                Shoot(map, aimap);
+            }
+
+            int targetY = Int32.Parse(a.ToString()) - 1;
 
             bool shot = false;
             
@@ -606,8 +716,8 @@ namespace Torpedo
                 }
                 else if (Destroyer[1] == Destroyer[3])
                 {
-                    for (int i = Submarine[0]; i <= Submarine[2]; i++)
-                        if (aimap[Submarine[1], i] == -2)
+                    for (int i = Destroyer[0]; i <= Destroyer[2]; i++)
+                        if (aimap[Destroyer[1], i] == -2)
                             Des++;
                 }
             }
@@ -634,13 +744,13 @@ namespace Torpedo
                 {
                     for (int i = PatrolBoat[1]; i <= PatrolBoat[3]; i++)
                         if (aimap[i, PatrolBoat[0]] == -2)
-                            Sub++;
+                            Pat++;
                 }
                 else if (PatrolBoat[1] == PatrolBoat[3])
                 {
                     for (int i = PatrolBoat[0]; i <= PatrolBoat[2]; i++)
                         if (aimap[PatrolBoat[1], i] == -2)
-                            Sub++;
+                            Pat++;
                 }
             }
 
@@ -679,23 +789,26 @@ namespace Torpedo
 
         public void AI_Shoot(int[,] map, int[,] aimap)
         {
-            Thread.Sleep(1000);
+            if (manual)
+                ReadKey();
+            else if (manual == false)
+                Thread.Sleep(1000);
             Clear();
             PrintMap(map, aimap);
 
             Random rnd = new Random();
 
             //Első random kulcs - értékek létreholzása
-            int shootRow = rnd.Next(0, 9);
-            int shootCol = rnd.Next(0, 9);
+            int shootRow = rnd.Next(0, 10);
+            int shootCol = rnd.Next(0, 10);
 
             //Ha már létezik egy elem a szótárban akkor a következő random
             //elemet nem adjuk hozzá, ha még nem létezik akkor hozzáadjuk
             while (map[shootRow,shootCol] < 0)
             {
                 //Random kulcs - érték pár létrehozása addig, amíg nem hozunk létre egy olyat ahova még nem lőttünk.
-                shootRow = rnd.Next(1, 11);
-                shootCol = rnd.Next(1, 11);
+                shootRow = rnd.Next(0, 10);
+                shootCol = rnd.Next(0, 10);
             }
 
             if (map[shootRow, shootCol] == 1)
@@ -747,14 +860,13 @@ namespace Torpedo
             int[] Submarine = intShips[3];
             int[] PatrolBoat = intShips[4];
 
-            int Car = 0;
-            int Bat = 0;
-            int Des = 0;
-            int Sub = 0;
-            int Pat = 0;
+            int AICar = 0;
+            int AIBat = 0;
+            int AIDes = 0;
+            int AISub = 0;
+            int AIPat = 0;
 
-
-            //*
+                            //*
 
             if (!sinkc)
             {
@@ -762,13 +874,13 @@ namespace Torpedo
                 {
                     for (int i = Carrier[1]; i <= Carrier[3]; i++)
                         if (aimap[i, Carrier[0]] == -2)
-                            Car++;
+                            AICar++;
                 }
                 else if (Carrier[1] == Carrier[3])
                 {
                     for (int i = Carrier[0]; i <= Carrier[2]; i++)
                         if (aimap[Carrier[1], i] == -2)
-                            Car++;
+                            AICar++;
                 }
             }
 
@@ -778,13 +890,13 @@ namespace Torpedo
                 {
                     for (int i = BattleShip[1]; i <= BattleShip[3]; i++)
                         if (aimap[i, BattleShip[0]] == -2)
-                            Bat++;
+                            AIBat++;
                 }
                 else if (BattleShip[1] == BattleShip[3])
                 {
                     for (int i = BattleShip[0]; i <= BattleShip[2]; i++)
                         if (aimap[BattleShip[1], i] == -2)
-                            Bat++;
+                            AIBat++;
                 }
             }
 
@@ -794,13 +906,13 @@ namespace Torpedo
                 {
                     for (int i = Destroyer[1]; i <= Destroyer[3]; i++)
                         if (aimap[i, Destroyer[0]] == -2)
-                            Des++;
+                            AIDes++;
                 }
                 else if (Destroyer[1] == Destroyer[3])
                 {
-                    for (int i = Submarine[0]; i <= Submarine[2]; i++)
-                        if (aimap[Submarine[1], i] == -2)
-                            Des++;
+                    for (int i = Destroyer[0]; i <= Destroyer[2]; i++)
+                        if (aimap[Destroyer[1], i] == -2)
+                            AIDes++;
                 }
             }
 
@@ -810,13 +922,13 @@ namespace Torpedo
                 {
                     for (int i = Submarine[1]; i <= Submarine[3]; i++)
                         if (aimap[i, Submarine[0]] == -2)
-                            Sub++;
+                            AISub++;
                 }
                 else if (Submarine[1] == Submarine[3])
                 {
                     for (int i = Submarine[0]; i <= Submarine[2]; i++)
                         if (aimap[Submarine[1], i] == -2)
-                            Sub++;
+                            AISub++;
                 }
             }
 
@@ -826,45 +938,45 @@ namespace Torpedo
                 {
                     for (int i = PatrolBoat[1]; i <= PatrolBoat[3]; i++)
                         if (aimap[i, PatrolBoat[0]] == -2)
-                            Sub++;
+                            AIPat++;
                 }
                 else if (PatrolBoat[1] == PatrolBoat[3])
                 {
                     for (int i = PatrolBoat[0]; i <= PatrolBoat[2]; i++)
                         if (aimap[PatrolBoat[1], i] == -2)
-                            Sub++;
+                            AIPat++;
                 }
             }
 
 
-            if (Car == 5)
+            if (AICar == 5)
             {
                 AnsiConsole.Write(new Markup("[greenyellow]A Repülőgép-hordozód elsüllyedt![/]"));
-                sinkc = true;
+                aisinkc = true;
             }
 
-            if (Bat == 4)
+            if (AIBat == 4)
             {
                 AnsiConsole.Write(new Markup("[greenyellow]A Csatahajód elsüllyedt![/]"));
-                sinkb = true;
+                aisinkb = true;
             }
 
-            if (Des == 3)
+            if (AIDes == 3)
             {
                 AnsiConsole.Write(new Markup("[greenyellow]A Rombolód elsüllyedt![/]"));
-                sinkd = true;
+                aisinkd = true;
             }
 
-            if (Sub == 3)
+            if (AISub == 3)
             {
                 AnsiConsole.Write(new Markup("[greenyellow]A Tengeralattjáród elsüllyedt![/]"));
-                sinks = true;
+                aisinks = true;
             }
 
-            if (Pat == 2)
+            if (AIPat == 2)
             {
                 AnsiConsole.Write(new Markup("[greenyellow]A Járőrhajód elsüllyedt![/]"));
-                sinkp = true;
+                aisinkp = true;
             }
 
         }
@@ -873,7 +985,7 @@ namespace Torpedo
         //--------------------------------------------------------------------------------------------------------------------------------------
         //Beni kódja:
 
-        static void Ai_Random()
+        public void Ai_Random()
         {
             Random randInt = new Random();
             string chars = "ABCDEFGHIJ";
@@ -990,7 +1102,7 @@ namespace Torpedo
             {
                 bool isHorizontal = randInt.Next(0, 100) > 50;
 
-                Console.WriteLine(shipSizes[i + 1]);
+                //Console.WriteLine(shipSizes[i + 1]);
 
                 bool cant = true;
 
@@ -1014,7 +1126,7 @@ namespace Torpedo
                         }
                         else
                         {
-                            Console.WriteLine("cannot");
+                            //Console.WriteLine("cannot");
                         }
                     }
                     else
@@ -1035,7 +1147,7 @@ namespace Torpedo
                         }
                         else
                         {
-                            Console.WriteLine("cannot");
+                            //Console.WriteLine("cannot");
                         }
                     }
                 }
@@ -1085,7 +1197,10 @@ namespace Torpedo
             int toX = coords[2];
             int toY = coords[3];
 
-            EnemyShipsCoords.Add(fromX + ";" + fromY + ";" + toX + ";" + toY);            
+            if (selfAI)
+                FriendlyShipsCoords.Add(fromX + ";" + fromY + ";" + toX + ";" + toY);
+            else
+                EnemyShipsCoords.Add(fromX + ";" + fromY + ";" + toX + ";" + toY);
 
             if (fromX == toX)
             {
@@ -1111,6 +1226,71 @@ namespace Torpedo
         bool sinks = false;
         bool sinkp = false;
 
+        bool aisinkc = false;
+        bool aisinkb = false;
+        bool aisinkd = false;
+        bool aisinks = false;
+        bool aisinkp = false;
+
+        bool selfAI = false;
+        bool manual = false;
+        char[] chars = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J' };
+
+        public void Menu(int[] ships, int[,] map, int[,] aimap)
+        {
+            Thread.Sleep(500);
+            Clear();
+            PrintMap(map, aimap);
+
+            AnsiConsole.Write(new Markup("[cyan3]Ha azt szeretnéd hogy 1 másodperc múlva eltűnjenek az 'értesítések' a képernyőről nyomd meg az 1-et." + Environment.NewLine
+                + "Ha azt szeretnéd, hogy csak akkor tűnjenek el, ha megnyomsz egy gombot, nyomd meg a 2-t.[/]"));
+            WriteLine(" ");
+            ForegroundColor = ConsoleColor.White;
+
+            string szöveg = ReadLine();
+            int gyász = Int32.Parse(szöveg.ToString());
+
+            if (gyász == 1)
+            {
+                manual = false;
+            }
+            else if (gyász == 2)
+            {
+                manual = true;
+            }
+            else
+            {
+                AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
+                Menu(ships, map, aimap);
+            }
+
+            AnsiConsole.Write(new Markup("[cyan3]Ha te szeretnéd lehelyezni a hajóidat, akkor írj be egy 1-et." + Environment.NewLine
+                + "Ha véletlenszerű lehelyezést szeretnél, írj be egy 2-t.[/]"));
+            WriteLine(" ");
+            ForegroundColor = ConsoleColor.White;
+
+            string lehelyezés = ReadLine();
+            int rák = Int32.Parse(lehelyezés.ToString());
+
+            if (rák == 1)
+            {
+                //Meghívjuk 5-ször a "Question" függvényt, ezzel elindítva a bekérdezést és a játékot is
+                for (int i = 0; i < 5; i++)
+                {
+                    Question(ships, map, aimap);
+                }
+            }
+            else if (rák == 2)
+            {
+                selfAI = true;
+                AIGenerate(map);
+            }
+            else
+            {
+                AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
+                Menu(ships, map, aimap);
+            }
+        }
     }
 
     //Végre jön a játék meghívása
@@ -1140,11 +1320,7 @@ namespace Torpedo
 
             game.AIGenerate(AI_Map);
 
-            //Meghívjuk 5-ször a "Question" függvényt, ezzel elindítva a bekérdezést és a játékot is
-            for (int i = 0; i < 5; i++)
-            {
-                game.Question(Ships, Map, AI_Map);
-            }
+            game.Menu(Ships, Map, AI_Map);
 
             while (true){
                 game.Shoot(Map, AI_Map);
@@ -1157,3 +1333,4 @@ namespace Torpedo
 
 //Bugok:
 //Nem lehet a 10-es oszlopban lehelyezni hajókat ✓
+//Bugos a Sink
