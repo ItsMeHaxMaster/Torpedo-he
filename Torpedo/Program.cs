@@ -184,9 +184,9 @@ namespace Torpedo
         public void PrintWL()
         {
             WriteLine();
-            AnsiConsole.Write(new Markup("[gold1]🥇Wins: [/]"));
+            AnsiConsole.Write(new Markup("[gold1]🥇Wins: [/]" + Win));
             WriteLine();
-            AnsiConsole.Write(new Markup("[red3]💥Losses: [/]"));
+            AnsiConsole.Write(new Markup("[red3]💥Losses: [/]" + Lose));
             WriteLine();
             WriteLine();
         }
@@ -1564,6 +1564,9 @@ namespace Torpedo
         bool manual = false;
         char[] chars = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J' };
 
+        int Win = 0;
+        int Lose = 0;
+
         public void Menu(int[] ships, int[,] map, int[,] aimap)
         {
             Thread.Sleep(500);
@@ -1620,6 +1623,9 @@ namespace Torpedo
             }
         }
 
+
+        
+
         public void Count(int winCount, int enemywinCount) 
         {
 
@@ -1641,8 +1647,8 @@ namespace Torpedo
                     string[] counts = line.Split(':');
 
                     //Ez a kettő változó kell a számlálóhoz!
-                    int friendlyCount = int.Parse(counts[0]); 
-                    int enemyCount = int.Parse(counts[1]);
+                    Win = int.Parse(counts[0]); 
+                    Lose = int.Parse(counts[1]);
 
                     line = sr.ReadLine();
                 }
@@ -1662,8 +1668,11 @@ namespace Torpedo
     {
         static void Main(string[] args)
         {
-
             bool run = true;
+
+            //Ez a kettő változó nyeri ki az eredményeket, közvetlen nem kell a számlálóhoz!
+            int winCount = 0;
+            int enemywinCount = 0;
 
             //Átrakjuk a konzol megjelenítését UTF-8-ra, hogy látszódjanak a hosszú magánhangzók, ha már ekkora gyász nyelv ez a magyar.
             Console.OutputEncoding = Encoding.UTF8;
@@ -1675,12 +1684,14 @@ namespace Torpedo
 
             //Ebben a tömbben tároljuk a hajótípusokat, abban a sorrendben, ahogy kiírtuk a konzolra a választásnál
             //(Carrier(1), BattleShip(2), Destroyer(3), Submarine(4), PatrolBoat(5)
-            int[] EnemyShips = { 1, 1, 1, 1, 1 };
+            int[] EnemyShips = { 0, 0, 0, 0, 0 };
 
             int[] FriendlyShips = { 1, 1, 1, 1, 1 };
 
             //A Torpedo osztályt "game"-ként "hozzuk" létre
             Torpedo game = new Torpedo();
+
+            game.Count(winCount, enemywinCount);
 
             //Meghívjuk a "PrintMap" függvényt, ezzel kirajzolva a map-ot
             game.PrintMap(Map, AI_Map);
@@ -1689,9 +1700,6 @@ namespace Torpedo
 
             game.Menu(EnemyShips, Map, AI_Map);
 
-            //Ez a kettő változó nyeri ki az eredményeket, közvetlen nem kell a számlálóhoz!
-            int winCount = 0;
-            int enemywinCount = 0;
 
             while (run)
             {
