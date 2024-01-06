@@ -70,13 +70,13 @@ namespace Torpedo
         {
 
             //Bal felül lévő ikon
-            AnsiConsole.Write(new Markup("[gold3_1]⚓ [/]"));
+            AnsiConsole.Write(new Markup("[blue1]⚓ [/]"));
             //Számok 1-től 10-ig []-ben
             for (int i = 1; i < 11; i++)
                 //Custom color a kiíráshoz
                 AnsiConsole.Write(new Markup("[gold3_1][[" + i + "]][/]"));
             Write("                         ");
-            AnsiConsole.Write(new Markup("[gold3_1]💢 [/]"));
+            AnsiConsole.Write(new Markup("[red1]💢 [/]"));
             for (int i = 1; i < 11; i++)
                 AnsiConsole.Write(new Markup("[gold3_1][[" + i + "]][/]"));
         }
@@ -172,11 +172,23 @@ namespace Torpedo
                         AnsiConsole.Write(new Markup("[maroon][[*]][/]"));
                     }
 
-                    PrintAIStats(x, y);
+                    PrintAIStats(x, y);                    
                 }
-
+                
                 Console.WriteLine();
             }
+
+            PrintWL();
+        }
+
+        public void PrintWL()
+        {
+            WriteLine();
+            AnsiConsole.Write(new Markup("[gold1]🥇Wins: [/]"));
+            WriteLine();
+            AnsiConsole.Write(new Markup("[red3]💥Losses: [/]"));
+            WriteLine();
+            WriteLine();
         }
 
         public void PrintStats(int x, int y)
@@ -195,7 +207,7 @@ namespace Torpedo
                 }
                 else
                 {
-                    AnsiConsole.Write(new Markup("[green1] Repülőgép-hordozó [[5]]    [/]"));
+                    AnsiConsole.Write(new Markup("[green3_1] Repülőgép-hordozó [[5]]    [/]"));
                 }
             }
 
@@ -207,7 +219,7 @@ namespace Torpedo
                 }
                 else
                 {
-                    AnsiConsole.Write(new Markup("[green1] Csatahajó [[4]]            [/]"));
+                    AnsiConsole.Write(new Markup("[green3_1] Csatahajó [[4]]            [/]"));
                 }
             }
 
@@ -220,7 +232,7 @@ namespace Torpedo
                 }
                 else
                 {
-                    AnsiConsole.Write(new Markup("[green1] Romboló [[3]]              [/]"));
+                    AnsiConsole.Write(new Markup("[green3_1] Romboló [[3]]              [/]"));
                 }
             }
 
@@ -233,7 +245,7 @@ namespace Torpedo
                 }
                 else
                 {
-                    AnsiConsole.Write(new Markup("[green1] Tengeralattjáró [[3]]      [/]"));
+                    AnsiConsole.Write(new Markup("[green3_1] Tengeralattjáró [[3]]      [/]"));
                 }
             }
 
@@ -246,7 +258,7 @@ namespace Torpedo
                 }
                 else
                 {
-                    AnsiConsole.Write(new Markup("[green1] Járőrhajó [[2]]            [/]"));
+                    AnsiConsole.Write(new Markup("[green3_1] Járőrhajó [[2]]            [/]"));
                 }
 
             }
@@ -268,7 +280,7 @@ namespace Torpedo
                 }
                 else
                 {
-                    AnsiConsole.Write(new Markup("[green1] Repülőgép-hordozó [[5]][/]"));
+                    AnsiConsole.Write(new Markup("[green3_1] Repülőgép-hordozó [[5]][/]"));
                 }
             }
 
@@ -280,7 +292,7 @@ namespace Torpedo
                 }
                 else
                 {
-                    AnsiConsole.Write(new Markup("[green1] Csatahajó [[4]][/]"));
+                    AnsiConsole.Write(new Markup("[green3_1] Csatahajó [[4]][/]"));
                 }
             }
 
@@ -293,7 +305,7 @@ namespace Torpedo
                 }
                 else
                 {
-                    AnsiConsole.Write(new Markup("[green1] Romboló [[3]][/]"));
+                    AnsiConsole.Write(new Markup("[green3_1] Romboló [[3]][/]"));
                 }
             }
 
@@ -306,7 +318,7 @@ namespace Torpedo
                 }
                 else
                 {
-                    AnsiConsole.Write(new Markup("[green1] Tengeralattjáró [[3]][/]"));
+                    AnsiConsole.Write(new Markup("[green3_1] Tengeralattjáró [[3]][/]"));
                 }
             }
 
@@ -319,7 +331,7 @@ namespace Torpedo
                 }
                 else
                 {
-                    AnsiConsole.Write(new Markup("[green1] Járőrhajó [[2]][/]"));
+                    AnsiConsole.Write(new Markup("[green3_1] Járőrhajó [[2]][/]"));
                 }
 
             }
@@ -1113,6 +1125,9 @@ namespace Torpedo
 
                 didShootGoodBefore = true;
 
+                Clear();
+                PrintMap(map, aimap);
+
                 AnsiConsole.Write(new Markup("[maroon]Az ellenség eltalálta az egyik hajódat![/]"));
 
                 AI_Sink(map, friendlyships);
@@ -1120,8 +1135,10 @@ namespace Torpedo
             else
             {
                 map[shootRow, shootCol] = -1;
+
                 Clear();
                 PrintMap(map, aimap);
+
                 AnsiConsole.Write(new Markup("[grey58]Az ellenség lövése nem talált![/]"));
             }
         }
@@ -1623,6 +1640,7 @@ namespace Torpedo
             //Ebben a tömbben tároljuk a hajótípusokat, abban a sorrendben, ahogy kiírtuk a konzolra a választásnál
             //(Carrier(1), BattleShip(2), Destroyer(3), Submarine(4), PatrolBoat(5)
             int[] EnemyShips = { 1, 1, 1, 1, 1 };
+
             int[] FriendlyShips = { 1, 1, 1, 1, 1 };
 
             //A Torpedo osztályt "game"-ként "hozzuk" létre
@@ -1635,6 +1653,7 @@ namespace Torpedo
 
             game.Menu(EnemyShips, Map, AI_Map);
 
+
             while (run)
             {
                 game.Shoot(Map, AI_Map, EnemyShips);
@@ -1643,7 +1662,7 @@ namespace Torpedo
                     run = false;
                     Clear();
                     game.PrintMap(Map, AI_Map);
-                    AnsiConsole.Write(new Markup("[green1]Sikeresen elsüllyeszted az ellenség összes hajóját, ezzel megnyerve a csatát![/]"));
+                    AnsiConsole.Write(new Markup("[green1]🏆Sikeresen elsüllyeszted az ellenség összes hajóját, ezzel megnyerve a csatát!🏆[/]"));
                 }
                 if (!run)
                 {
@@ -1691,7 +1710,7 @@ namespace Torpedo
                         run = false;
                         Clear();
                         game.PrintMap(Map, AI_Map);
-                        AnsiConsole.Write(new Markup("[red1]Sajnos az ellenség elsüllyesztette az összes hajódat, ezzel elvesztetted a csatát![/]"));
+                        AnsiConsole.Write(new Markup("[red1]🚫Sajnos az ellenség elsüllyesztette az összes hajódat, ezzel elvesztetted a csatát!🚫[/]"));
                     }
                     if (!run)
                     {
@@ -1736,8 +1755,3 @@ namespace Torpedo
         }
     }
 }
-
-
-//Bugok:
-//Nem lehet a 10-es oszlopban lehelyezni hajókat ✓
-//Bugos a Sink ✓
