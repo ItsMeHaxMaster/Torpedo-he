@@ -82,7 +82,7 @@ namespace Torpedo
         }
 
         //A map kiírása
-        public void PrintMap(int[,] map, int[,] aimap)
+        public void PrintMap(int[,] map, int[,] aimap, int Win, int Lose)
         {
 
             bool visible = true;
@@ -178,10 +178,10 @@ namespace Torpedo
                 Console.WriteLine();
             }
 
-            PrintWL();
+            PrintWL(Win, Lose);
         }
 
-        public void PrintWL()
+        public void PrintWL(int Win, int Lose)
         {
             WriteLine();
             AnsiConsole.Write(new Markup("[gold1]🥇Wins: [/]" + Win));
@@ -337,7 +337,7 @@ namespace Torpedo
             }
         }
 
-        public void Place(int[] ships, int[,] map, int[,] aimap, int ship, int[] coordinates)
+        public void Place(int[] ships, int[,] map, int[,] aimap, int ship, int[] coordinates, int Win, int Lose)
         {
 
             // Ha y = y akkor sor
@@ -388,7 +388,7 @@ namespace Torpedo
                     else
                     {
                         AnsiConsole.Write(new Markup("[red1]Rossz a beírt koordináta![/]"));
-                        Question(ships, map, aimap);
+                        Question(ships, map, aimap, Win, Lose);
                     }
                 }
                 //Megnézzük, hogy a két bekért érték Y értéke egyezik-e, ha igen akkor egy sorban lesz a hajó
@@ -414,7 +414,7 @@ namespace Torpedo
                     {
 
                         AnsiConsole.Write(new Markup("[red1]Rossz a beírt koordináta![/]"));
-                        Question(ships, map, aimap);
+                        Question(ships, map, aimap, Win, Lose);
                     }
                 }
                 //Ha sikeresen lefutott a fenti kódsor, akkor kivonunk a "Ships" tömb jelenlegi eleméből 1-et,
@@ -425,13 +425,13 @@ namespace Torpedo
             {
 
                 AnsiConsole.Write(new Markup("[red1]Nincs több ilyen hajótípusod![/]"));
-                Question(ships, map, aimap);
+                Question(ships, map, aimap, Win, Lose);
             }
         }
 
         //Létrehozzunk egy változót a lehelyezni kívánt hajó típusának bekérdezésére. Erre azért van szükség, mert így nem jön létre egy bug amit tapasztaltunk,
         //mert így nem a "Coordinates" függvényt kell meghívnunk, ha rossz a bekért adat, és nem akad össze a már futó "Coordinates" függvénnyel.
-        public void Question(int[] ships, int[,] map, int[,] aimap)
+        public void Question(int[] ships, int[,] map, int[,] aimap, int Win, int Lose)
         {
             //Várunk 1 másodpercet a kiírt szöveg törlésével, vagy várunk egy gomb megnyomására, majd töröljük a konzolt, és meghívjukk a "PrintMap" függvényt,
             //ezzel frissítve a térképet a lehelyezett hajókkal
@@ -440,7 +440,7 @@ namespace Torpedo
             else if (manual == false)
                 Thread.Sleep(1000);
             Clear();
-            PrintMap(map, aimap);
+            PrintMap(map, aimap, Win, Lose);
 
 
             AnsiConsole.Write(new Markup("[cyan3]Add meg a hajó sorszámát! (1. Repülőgép-hordozó(5), 2. Csatahajó(4), 3. Romboló(3), 4. Tengeralattjáró(3), 5. Járőrhajó(2) )[/]"));
@@ -457,32 +457,32 @@ namespace Torpedo
                 {
 
                     AnsiConsole.Write(new Markup("[red1]Hibás a hajó![/]"));
-                    Question(ships, map, aimap);
+                    Question(ships, map, aimap, Win, Lose);
                 }
                 //Leellenőrizzük, hogy a lehelyezni kívánt hajót lehelyeztük-e már
                 else if (ships[ship - 1] == 0)
                 {
 
                     AnsiConsole.Write(new Markup("[red1]Már lehejeztük![/]"));
-                    Question(ships, map, aimap);
+                    Question(ships, map, aimap, Win, Lose);
                 }
                 //Ha helyes a beírt adat, akkor meghívjuk a "Coordinates" függvényt, ezzel tovább haladva a bekérdezéssel
                 else
                 {
-                    Coordinates(ships, map, aimap, ship);
+                    Coordinates(ships, map, aimap, ship, Win, Lose);
                 }
             }
             catch
             {
                 AnsiConsole.Write(new Markup("[red1]Mindent jól adtál meg?[/]"));
-                Question(ships, map, aimap);
+                Question(ships, map, aimap, Win, Lose);
             }
 
 
         }
 
         //Lértehozzuk a "Coordinates" függvényt, a koordináták bekérdezésére és a hajóhosszúság ellenőrzésére
-        public void Coordinates(int[] ships, int[,] map, int[,] aimap, int ship)
+        public void Coordinates(int[] ships, int[,] map, int[,] aimap, int ship, int Win, int Lose)
         {
             //Carrier = 5
             //Battleship = 4
@@ -586,7 +586,7 @@ namespace Torpedo
                     if (fromY - toY == 4 || fromY - toY == -4)
                     {
                         //Meghívjuk a "Place" függvényt és nyugtázzuk a sikeres a lehelyezést egy "Nice"-al
-                        Place(ships, map, aimap, ship, coordinates);
+                        Place(ships, map, aimap, ship, coordinates, Win, Lose);
                         AnsiConsole.Write(new Markup("[green1]Sikeres a lehelyezés![/]"));
                     }
                     //Már ezt is leírtam fentebb.
@@ -594,7 +594,7 @@ namespace Torpedo
                     else
                     {
                         AnsiConsole.Write(new Markup("[red1]Sikertelen volt a lehelyezés![/]"));
-                        Question(ships, map, aimap);
+                        Question(ships, map, aimap, Win, Lose);
                     }
                 }
                 //Ez ugyan az, mint az előző csak fordítva, meg amúgyis leírtam már egyszer, ha nem tűnt volna fel.
@@ -602,19 +602,19 @@ namespace Torpedo
                 {
                     if (fromX - toX == 4 || fromX - toX == -4)
                     {
-                        Place(ships, map, aimap, ship, coordinates);
+                        Place(ships, map, aimap, ship, coordinates, Win, Lose);
                         AnsiConsole.Write(new Markup("[green1]Sikeres lehelyezés![/]"));
                     }
                     else
                     {
                         AnsiConsole.Write(new Markup("[red1]Sikertelen volt a lehelyezés![/]"));
-                        Question(ships, map, aimap);
+                        Question(ships, map, aimap, Win, Lose);
                     }
                 }
                 else
                 {
                     AnsiConsole.Write(new Markup("[red1]Sikertelen volt a lehelyezés![/]"));
-                    Question(ships, map, aimap);
+                    Question(ships, map, aimap, Win, Lose);
                 }
             }
             //Innentől csak ismételgetjük a fentit, minden hajótípusnál, a hajóhosszúságot megváltoztatva
@@ -624,32 +624,32 @@ namespace Torpedo
                 {
                     if (fromY - toY == 3 || fromY - toY == -3)
                     {
-                        Place(ships, map, aimap, ship, coordinates);
+                        Place(ships, map, aimap, ship, coordinates, Win, Lose);
                         AnsiConsole.Write(new Markup("[green1]Sikeres lehelyezés![/]"));
                     }
                     else
                     {
                         AnsiConsole.Write(new Markup("[red1]Sikertelen volt a lehelyezés![/]"));
-                        Question(ships, map, aimap);
+                        Question(ships, map, aimap, Win, Lose);
                     }
                 }
                 else if (fromY == toY)
                 {
                     if (fromX - toX == 3 || fromX - toX == -3)
                     {
-                        Place(ships, map, aimap, ship, coordinates);
+                        Place(ships, map, aimap, ship, coordinates, Win, Lose);
                         AnsiConsole.Write(new Markup("[green1]Sikeres lehelyezés![/]"));
                     }
                     else
                     {
                         AnsiConsole.Write(new Markup("[red1]Sikertelen volt a lehelyezés![/]"));
-                        Question(ships, map, aimap);
+                        Question(ships, map, aimap, Win, Lose);
                     }
                 }
                 else
                 {
                     AnsiConsole.Write(new Markup("[red1]Sikertelen volt a lehelyezés![/]"));
-                    Question(ships, map, aimap);
+                    Question(ships, map, aimap, Win, Lose);
                 }
             }
             else if (ship == 3 || ship == 4)
@@ -658,32 +658,32 @@ namespace Torpedo
                 {
                     if (fromY - toY == 2 || fromY - toY == -2)
                     {
-                        Place(ships, map, aimap, ship, coordinates);
+                        Place(ships, map, aimap, ship, coordinates, Win, Lose);
                         AnsiConsole.Write(new Markup("[green1]Sikeres lehelyezés![/]"));
                     }
                     else
                     {
                         AnsiConsole.Write(new Markup("[red1]Sikertelen volt a lehelyezés![/]"));
-                        Question(ships, map, aimap);
+                        Question(ships, map, aimap, Win, Lose);
                     }
                 }
                 else if (fromY == toY)
                 {
                     if (fromX - toX == 2 || fromX - toX == -2)
                     {
-                        Place(ships, map, aimap, ship, coordinates);
+                        Place(ships, map, aimap, ship, coordinates, Win, Lose);
                         AnsiConsole.Write(new Markup("[green1]Sikeres lehelyezés![/]"));
                     }
                     else
                     {
                         AnsiConsole.Write(new Markup("[red1]Sikertelen volt a lehelyezés![/]"));
-                        Question(ships, map, aimap);
+                        Question(ships, map, aimap, Win, Lose);
                     }
                 }
                 else
                 {
                     AnsiConsole.Write(new Markup("[red1]Sikertelen volt a lehelyezés![/]"));
-                    Question(ships, map, aimap);
+                    Question(ships, map, aimap, Win, Lose);
                 }
             }
             else if (ship == 5)
@@ -692,44 +692,44 @@ namespace Torpedo
                 {
                     if (fromY - toY == 1 || fromY - toY == -1)
                     {
-                        Place(ships, map, aimap, ship, coordinates);
+                        Place(ships, map, aimap, ship, coordinates, Win, Lose);
                         AnsiConsole.Write(new Markup("[green1]Sikeres lehelyezés![/]"));
                     }
                     else
                     {
                         AnsiConsole.Write(new Markup("[red1]Sikertelen volt a lehelyezés![/]"));
-                        Question(ships, map, aimap);
+                        Question(ships, map, aimap, Win, Lose);
                     }
                 }
                 else if (fromY == toY)
                 {
                     if (fromX - toX == 1 || fromX - toX == -1)
                     {
-                        Place(ships, map, aimap, ship, coordinates);
+                        Place(ships, map, aimap, ship, coordinates, Win, Lose);
                         AnsiConsole.Write(new Markup("[green1]Sikeres lehelyezés![/]"));
                     }
                     else
                     {
                         AnsiConsole.Write(new Markup("[red1]Sikertelen volt a lehelyezés![/]"));
-                        Question(ships, map, aimap);
+                        Question(ships, map, aimap, Win, Lose);
                     }
                 }
                 else
                 {
                     AnsiConsole.Write(new Markup("[red1]Sikertelen volt a lehelyezés![/]"));
-                    Question(ships, map, aimap);
+                    Question(ships, map, aimap, Win, Lose);
                 }
             }
         }
 
-        public void Shoot(int[,] map, int[,] aimap, int[] enemyships)
+        public void Shoot(int[,] map, int[,] aimap, int[] enemyships, int Win, int Lose)
         {
             if (manual)
                 ReadKey();
             else if (manual == false)
                 Thread.Sleep(1000);
             Clear();
-            PrintMap(map, aimap);
+            PrintMap(map, aimap, Win, Lose);
 
             AnsiConsole.Write(new Markup("[cyan3]Löveg betöltve! Adja meg a cél kordinátákat![/]"));
             WriteLine(" ");
@@ -741,14 +741,14 @@ namespace Torpedo
             if (target.Length !< 2 || target.Length !> 4)
             {
                 AnsiConsole.Write(new Markup("[red1]Nem érvényes koordináta![/]"));
-                Shoot(map, aimap, enemyships);
+                Shoot(map, aimap, enemyships, Win, Lose);
                 return;
             }
             
             if (!chars.Contains(target[0]))
             {
                 AnsiConsole.Write(new Markup("[red1]Nem érvényes koordináta![/]"));
-                Shoot(map, aimap, enemyships);
+                Shoot(map, aimap, enemyships, Win, Lose);
             }
 
             int targetX = mapCharToIntDict[target[0]];
@@ -759,13 +759,13 @@ namespace Torpedo
                 if (Int32.Parse(a.ToString()) > 10 || Int32.Parse(a.ToString()) < 1)
                 {
                     AnsiConsole.Write(new Markup("[red1]Nem érvényes koordináta![/]"));
-                    Shoot(map, aimap, enemyships);
+                    Shoot(map, aimap, enemyships, Win, Lose);
                 }
             }
             catch
             {
                 AnsiConsole.Write(new Markup("[red1]Nem érvényes koordináta![/]"));
-                Shoot(map, aimap, enemyships);
+                Shoot(map, aimap, enemyships, Win, Lose);
             }
 
             int targetY = Int32.Parse(a.ToString()) - 1;
@@ -784,28 +784,28 @@ namespace Torpedo
                 {
                     aimap[targetX, targetY] = -2;                   
                     Clear();
-                    PrintMap(map, aimap);
+                    PrintMap(map, aimap, Win, Lose);
                     AnsiConsole.Write(new Markup("[maroon]Találat![/]"));
-                    Sink(aimap, enemyships);
+                    Sink(aimap, enemyships, Win, Lose);
                 }
                 else
                 {
                     aimap[targetX, targetY] = -1;                    
                     Clear();
-                    PrintMap(map, aimap);
+                    PrintMap(map, aimap, Win, Lose);
                     AnsiConsole.Write(new Markup("[grey58]A francba! Nincs találat![/]"));
                 }
             }
             else
             {
                 AnsiConsole.Write(new Markup("[red1]Nem érvényes koordináta![/]"));
-                Shoot(map, aimap, enemyships);
+                Shoot(map, aimap, enemyships, Win, Lose);
             }
 
         }
 
 
-        public void Sink(int[,] aimap, int[] enemyships)
+        public void Sink(int[,] aimap, int[] enemyships, int Win, int Lose)
         {
             //fromX = [0]
             //fromY = [1]
@@ -1080,14 +1080,14 @@ namespace Torpedo
             return new [] { shootRow, shootCol };
         }
 
-        public void AI_Shoot(int[,] map, int[,] aimap, int[] friendlyships)
+        public void AI_Shoot(int[,] map, int[,] aimap, int[] friendlyships, int Win, int Lose)
         {
             if (manual)
                 ReadKey();
             else if (manual == false)
                 Thread.Sleep(1000);
             Clear();
-            PrintMap(map, aimap);
+            PrintMap(map, aimap, Win, Lose);
 
             Random rnd = new Random();
 
@@ -1126,7 +1126,7 @@ namespace Torpedo
                 didShootGoodBefore = true;
 
                 Clear();
-                PrintMap(map, aimap);
+                PrintMap(map, aimap, Win, Lose);
 
                 AnsiConsole.Write(new Markup("[maroon]Az ellenség eltalálta az egyik hajódat![/]"));
 
@@ -1137,7 +1137,7 @@ namespace Torpedo
                 map[shootRow, shootCol] = -1;
 
                 Clear();
-                PrintMap(map, aimap);
+                PrintMap(map, aimap, Win, Lose);
 
                 AnsiConsole.Write(new Markup("[grey58]Az ellenség lövése nem talált![/]"));
             }
@@ -1564,14 +1564,11 @@ namespace Torpedo
         bool manual = false;
         char[] chars = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J' };
 
-        int Win = 0;
-        int Lose = 0;
-
-        public void Menu(int[] ships, int[,] map, int[,] aimap)
+        public void Menu(int[] ships, int[,] map, int[,] aimap, int Win, int Lose)
         {
             Thread.Sleep(500);
             Clear();
-            PrintMap(map, aimap);
+            PrintMap(map, aimap, Win, Lose);
 
             AnsiConsole.Write(new Markup("[cyan3]Ha azt szeretnéd hogy 1 másodperc múlva eltűnjenek az 'értesítések' a képernyőről nyomd meg az 1-et." + Environment.NewLine
                 + "Ha azt szeretnéd, hogy csak akkor tűnjenek el, ha megnyomsz egy gombot, nyomd meg a 2-t.[/]"));
@@ -1592,7 +1589,7 @@ namespace Torpedo
             else
             {
                 AnsiConsole.Write(new Markup("[red1]Rossz érték![/]"));
-                Menu(ships, map, aimap);
+                Menu(ships, map, aimap, Win, Lose);
             }
 
             AnsiConsole.Write(new Markup("[cyan3]Ha te szeretnéd lehelyezni a hajóidat, akkor írj be egy 1-et." + Environment.NewLine
@@ -1608,7 +1605,7 @@ namespace Torpedo
                 //Meghívjuk 5-ször a "Question" függvényt, ezzel elindítva a bekérdezést és a játékot is
                 for (int i = 0; i < 5; i++)
                 {
-                    Question(ships, map, aimap);
+                    Question(ships, map, aimap, Win, Lose);
                 }
             }
             else if (rák == 2)
@@ -1619,44 +1616,49 @@ namespace Torpedo
             else
             {
                 AnsiConsole.Write(new Markup("[red1]Rossz érték![/]"));
-                Menu(ships, map, aimap);
+                Menu(ships, map, aimap, Win, Lose);
             }
-        }
+        }        
 
-
-        
-
-        public void Count(int winCount, int enemywinCount) 
+        public void Count(int winCount, int loseCount) 
         {
 
             string line = null;
+            StreamWriter sw = null;
 
             //Az első szám a mi eredményünk a második szám az ellenfelé
             try
             {
-                if (!File.Exists("../../counter.txt"))
+                if (!File.Exists("../../save.txt"))
                 {
-                    StreamWriter createFile = new StreamWriter("../../counter.txt");
+                    sw = new StreamWriter("../../save.txt");
+                    sw.WriteLine(0 + ";" + 0);
+                    sw.Close();
                 }
-                
-                StreamReader sr = new StreamReader("../../counter.txt");
+
+                StreamReader sr = new StreamReader("../../save.txt");
                 line = sr.ReadLine();
 
                 while (line != null)
                 {
-                    string[] counts = line.Split(':');
+                    string[] counts = line.Split(';');
 
                     //Ez a kettő változó kell a számlálóhoz!
-                    Win = int.Parse(counts[0]); 
-                    Lose = int.Parse(counts[1]);
+                    winCount = int.Parse(counts[0]);
+                    loseCount = int.Parse(counts[1]);
+
+                    //if (Win > winCount)
+                    //    winCount = Win;
+                    //else if (Lose > loseCount)
+                    //    loseCount = Lose;
 
                     line = sr.ReadLine();
                 }
-
-                StreamWriter sw = new StreamWriter("../../counter.txt");
-                sw.WriteLine(winCount + ':' + enemywinCount);
-                sw.Close();
                 sr.Close();
+
+                sw = new StreamWriter("../../save.txt");
+                sw.WriteLine(winCount + ";" + loseCount);
+                sw.Close();
 
             }
             catch (Exception e) { Console.WriteLine(e); }
@@ -1671,8 +1673,8 @@ namespace Torpedo
             bool run = true;
 
             //Ez a kettő változó nyeri ki az eredményeket, közvetlen nem kell a számlálóhoz!
-            int winCount = 0;
-            int enemywinCount = 0;
+            int WinCount = 0;
+            int LoseCount = 0;
 
             //Átrakjuk a konzol megjelenítését UTF-8-ra, hogy látszódjanak a hosszú magánhangzók, ha már ekkora gyász nyelv ez a magyar.
             Console.OutputEncoding = Encoding.UTF8;
@@ -1684,33 +1686,33 @@ namespace Torpedo
 
             //Ebben a tömbben tároljuk a hajótípusokat, abban a sorrendben, ahogy kiírtuk a konzolra a választásnál
             //(Carrier(1), BattleShip(2), Destroyer(3), Submarine(4), PatrolBoat(5)
-            int[] EnemyShips = { 0, 0, 0, 0, 0 };
+            int[] EnemyShips = { 0, 0, 0, 0, 0};
 
             int[] FriendlyShips = { 1, 1, 1, 1, 1 };
 
             //A Torpedo osztályt "game"-ként "hozzuk" létre
             Torpedo game = new Torpedo();
 
-            game.Count(winCount, enemywinCount);
+            game.Count(WinCount, LoseCount);
 
             //Meghívjuk a "PrintMap" függvényt, ezzel kirajzolva a map-ot
-            game.PrintMap(Map, AI_Map);
+            game.PrintMap(Map, AI_Map, WinCount, LoseCount);
 
             game.AIGenerate(AI_Map);
 
-            game.Menu(EnemyShips, Map, AI_Map);
-
+            game.Menu(EnemyShips, Map, AI_Map, WinCount, LoseCount);
 
             while (run)
             {
-                game.Shoot(Map, AI_Map, EnemyShips);
+                game.Shoot(Map, AI_Map, EnemyShips, WinCount, LoseCount);
                 if (EnemyShips[0] == 0 && EnemyShips[1] == 0 && EnemyShips[2] == 0 && EnemyShips[3] == 0 && EnemyShips[4] == 0)
-                {
+                {                    
                     run = false;
                     Clear();
-                    game.PrintMap(Map, AI_Map);
+                    game.PrintMap(Map, AI_Map, WinCount, LoseCount);
                     AnsiConsole.Write(new Markup("[green1]🏆Sikeresen elsüllyeszted az ellenség összes hajóját, ezzel megnyerve a csatát!🏆[/]"));
-                    winCount += 1;
+                    WinCount++;
+                    game.Count(WinCount, LoseCount);
                 }
                 if (!run)
                 {
@@ -1739,9 +1741,9 @@ namespace Torpedo
                                 AI_Map[x, y] = 0;
                             }
                         }
-                        game.PrintMap(Map, AI_Map);
+                        game.PrintMap(Map, AI_Map, WinCount, LoseCount);
                         game.AIGenerate(AI_Map);
-                        game.Menu(EnemyShips, Map, AI_Map);
+                        game.Menu(EnemyShips, Map, AI_Map, WinCount, LoseCount);
                     }
                     else if (yes == "N" || yes == "n")
                     {
@@ -1752,13 +1754,15 @@ namespace Torpedo
                 }
                 else
                 {
-                    game.AI_Shoot(Map, AI_Map, FriendlyShips);
+                    game.AI_Shoot(Map, AI_Map, FriendlyShips, WinCount, LoseCount);
                     if (FriendlyShips[0] == 0 && FriendlyShips[1] == 0 && FriendlyShips[2] == 0 && FriendlyShips[3] == 0 && FriendlyShips[4] == 0)
                     {
                         run = false;
                         Clear();
-                        game.PrintMap(Map, AI_Map);
-                        AnsiConsole.Write(new Markup("[red1]Sajnos az ellenség elsüllyesztette az összes hajódat, ezzel elvesztetted a csatát![/]"));
+                        game.PrintMap(Map, AI_Map, WinCount, LoseCount);
+                        AnsiConsole.Write(new Markup("[red1]❌Sajnos az ellenség elsüllyesztette az összes hajódat, ezzel elvesztetted a csatát!❌[/]"));
+                        LoseCount++;
+                        game.Count(WinCount, LoseCount);
                     }
                     if (!run)
                     {
@@ -1787,9 +1791,9 @@ namespace Torpedo
                                     AI_Map[x, y] = 0;
                                 }
                             }
-                            game.PrintMap(Map, AI_Map);
+                            game.PrintMap(Map, AI_Map, WinCount, LoseCount);
                             game.AIGenerate(AI_Map);
-                            game.Menu(EnemyShips, Map, AI_Map);
+                            game.Menu(EnemyShips, Map, AI_Map, WinCount, LoseCount);
                         }
                         else if (yes == "N" || yes == "n")
                         {
