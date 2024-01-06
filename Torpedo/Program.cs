@@ -1619,6 +1619,42 @@ namespace Torpedo
                 Menu(ships, map, aimap);
             }
         }
+
+        public void Count(int winCount, int enemywinCount) 
+        {
+
+            string line = null;
+
+            //Az első szám a mi eredményünk a második szám az ellenfelé
+            try
+            {
+                if (!File.Exists("../../counter.txt"))
+                {
+                    StreamWriter createFile = new StreamWriter("../../counter.txt");
+                }
+                
+                StreamReader sr = new StreamReader("../../counter.txt");
+                line = sr.ReadLine();
+
+                while (line != null)
+                {
+                    string[] counts = line.Split(':');
+
+                    //Ez a kettő változó kell a számlálóhoz!
+                    int friendlyCount = int.Parse(counts[0]); 
+                    int enemyCount = int.Parse(counts[1]);
+
+                    line = sr.ReadLine();
+                }
+
+                StreamWriter sw = new StreamWriter("../../counter.txt");
+                sw.WriteLine(winCount + ':' + enemywinCount);
+                sw.Close();
+                sr.Close();
+
+            }
+            catch (Exception e) { Console.WriteLine(e); }
+        }
     }
 
     //Végre jön a játék meghívása
@@ -1653,6 +1689,9 @@ namespace Torpedo
 
             game.Menu(EnemyShips, Map, AI_Map);
 
+            //Ez a kettő változó nyeri ki az eredményeket, közvetlen nem kell a számlálóhoz!
+            int winCount = 0;
+            int enemywinCount = 0;
 
             while (run)
             {
@@ -1663,6 +1702,7 @@ namespace Torpedo
                     Clear();
                     game.PrintMap(Map, AI_Map);
                     AnsiConsole.Write(new Markup("[green1]🏆Sikeresen elsüllyeszted az ellenség összes hajóját, ezzel megnyerve a csatát!🏆[/]"));
+                    winCount += 1;
                 }
                 if (!run)
                 {
@@ -1710,7 +1750,7 @@ namespace Torpedo
                         run = false;
                         Clear();
                         game.PrintMap(Map, AI_Map);
-                        AnsiConsole.Write(new Markup("[red1]🚫Sajnos az ellenség elsüllyesztette az összes hajódat, ezzel elvesztetted a csatát!🚫[/]"));
+                        AnsiConsole.Write(new Markup("[red1]Sajnos az ellenség elsüllyesztette az összes hajódat, ezzel elvesztetted a csatát![/]"));
                     }
                     if (!run)
                     {
