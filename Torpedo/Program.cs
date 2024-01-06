@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using static System.Console;
 
@@ -550,7 +551,7 @@ namespace Torpedo
             }
         }
 
-        public void Shoot(int[,] map, int[,] aimap)
+        public void Shoot(int[,] map, int[,] aimap, int[] enemyships)
         {
             if (manual)
                 ReadKey();
@@ -569,14 +570,14 @@ namespace Torpedo
             if (target.Length !< 2 || target.Length !> 4)
             {
                 AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
-                Shoot(map, aimap);
+                Shoot(map, aimap, enemyships);
                 return;
             }
             
             if (!chars.Contains(target[0]))
             {
                 AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
-                Shoot(map, aimap);
+                Shoot(map, aimap, enemyships);
             }
 
             int targetX = mapCharToIntDict[target[0]];
@@ -587,13 +588,13 @@ namespace Torpedo
                 if (Int32.Parse(a.ToString()) > 10 || Int32.Parse(a.ToString()) < 1)
                 {
                     AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
-                    Shoot(map, aimap);
+                    Shoot(map, aimap, enemyships);
                 }
             }
             catch
             {
                 AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
-                Shoot(map, aimap);
+                Shoot(map, aimap, enemyships);
             }
 
             int targetY = Int32.Parse(a.ToString()) - 1;
@@ -612,7 +613,7 @@ namespace Torpedo
                 {
                     aimap[targetX, targetY] = -2;
                     AnsiConsole.Write(new Markup("[maroon]Találat![/]"));
-                    Sink(aimap);
+                    Sink(aimap, enemyships);
                 }
                 else
                 {
@@ -623,13 +624,13 @@ namespace Torpedo
             else
             {
                 AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
-                Shoot(map, aimap);
+                Shoot(map, aimap, enemyships);
             }
 
         }
 
 
-        public void Sink(int[,] aimap)
+        public void Sink(int[,] aimap, int[] enemyships)
         {
             //fromX = [0]
             //fromY = [1]
@@ -759,35 +760,40 @@ namespace Torpedo
             {
                 AnsiConsole.Write(new Markup("[greenyellow]Az ellenség Repülőgép-hordozója elsüllyedt![/]"));
                 sinkc = true;
+                enemyships[0] = 0;
             }
            
             if (Bat == 4)
             {
                 AnsiConsole.Write(new Markup("[greenyellow]Az ellenség Csatahajója elsüllyedt![/]"));
                 sinkb = true;
+                enemyships[1] = 0;
             }
 
             if (Des == 3)
             {
                 AnsiConsole.Write(new Markup("[greenyellow]Az ellenség Rombolója elsüllyedt![/]"));
                 sinkd = true;
+                enemyships[2] = 0;
             }
 
             if (Sub == 3)
             {
                 AnsiConsole.Write(new Markup("[greenyellow]Az ellenség Tengeralattjárója elsüllyedt![/]"));
                 sinks = true;
+                enemyships[3]= 0;
             }
 
             if (Pat == 2)
             {
                 AnsiConsole.Write(new Markup("[greenyellow]Az ellenség Járőrhajója elsüllyedt![/]"));
                 sinkp = true;
+                enemyships[4] = 0;
             }
 
         }
 
-        public void AI_Shoot(int[,] map, int[,] aimap)
+        public void AI_Shoot(int[,] map, int[,] aimap, int[] friendlyships)
         {
             if (manual)
                 ReadKey();
@@ -815,7 +821,7 @@ namespace Torpedo
             {
                 map[shootRow, shootCol] = -2;
                 AnsiConsole.Write(new Markup("[maroon]Az ellenség eltalálta az egyik hajódat![/]"));
-                AI_Sink(map);
+                AI_Sink(map, friendlyships);
             }
             else
             {
@@ -824,7 +830,7 @@ namespace Torpedo
             }
         }
 
-        public void AI_Sink(int[,] aimap)
+        public void AI_Sink(int[,] aimap, int[] friendlyships)
         {
             //fromX = [0]
             //fromY = [1]
@@ -953,30 +959,35 @@ namespace Torpedo
             {
                 AnsiConsole.Write(new Markup("[greenyellow]A Repülőgép-hordozód elsüllyedt![/]"));
                 aisinkc = true;
+                friendlyships[0] = 0;
             }
 
             if (AIBat == 4)
             {
                 AnsiConsole.Write(new Markup("[greenyellow]A Csatahajód elsüllyedt![/]"));
                 aisinkb = true;
+                friendlyships[1] = 0;
             }
 
             if (AIDes == 3)
             {
                 AnsiConsole.Write(new Markup("[greenyellow]A Rombolód elsüllyedt![/]"));
                 aisinkd = true;
+                friendlyships[2] = 0;
             }
 
             if (AISub == 3)
             {
                 AnsiConsole.Write(new Markup("[greenyellow]A Tengeralattjáród elsüllyedt![/]"));
                 aisinks = true;
+                friendlyships[3] = 0;
             }
 
             if (AIPat == 2)
             {
                 AnsiConsole.Write(new Markup("[greenyellow]A Járőrhajód elsüllyedt![/]"));
                 aisinkp = true;
+                friendlyships[4] = 0;
             }
 
         }
@@ -1299,7 +1310,8 @@ namespace Torpedo
         static void Main(string[] args)
         {
 
-            
+            bool run = true;
+
             //Átrakjuk a konzol megjelenítését UTF-8-ra, hogy látszódjanak a hosszú magánhangzók, ha már ekkora gyász nyelv ez a magyar.
             Console.OutputEncoding = Encoding.UTF8;
 
@@ -1310,7 +1322,8 @@ namespace Torpedo
 
             //Ebben a tömbben tároljuk a hajótípusokat, abban a sorrendben, ahogy kiírtuk a konzolra a választásnál
             //(Carrier(1), BattleShip(2), Destroyer(3), Submarine(4), PatrolBoat(5)
-            int[] Ships = { 1, 1, 1, 1, 1 };
+            int[] EnemyShips = { 0, 0, 0, 0, 0 };
+            int[] FriendlyShips = { 1, 1, 1, 1, 1 };
 
             //A Torpedo osztályt "game"-ként "hozzuk" létre
             Torpedo game = new Torpedo();
@@ -1320,11 +1333,105 @@ namespace Torpedo
 
             game.AIGenerate(AI_Map);
 
-            game.Menu(Ships, Map, AI_Map);
+            game.Menu(EnemyShips, Map, AI_Map);
 
-            while (true){
-                game.Shoot(Map, AI_Map);
-                game.AI_Shoot(Map, AI_Map);
+            while (run)
+            {
+                game.Shoot(Map, AI_Map, EnemyShips);
+                if (EnemyShips[0] == 0 && EnemyShips[1] == 0 && EnemyShips[2] == 0 && EnemyShips[3] == 0 && EnemyShips[4] == 0)
+                {
+                    run = false;
+                    Clear();
+                    game.PrintMap(Map, AI_Map);
+                    AnsiConsole.Write(new Markup("[green1]Sikeresen elsüllyeszted az ellenség összes hajóját, ezzel megnyerve a csatát![/]"));
+                }
+                if (!run)
+                {
+                    WriteLine(" ");
+                    AnsiConsole.Write(new Markup("[cyan3]Szeretnél még egyet játszani? (I/N)[/]"));
+                    WriteLine(" ");
+                    ForegroundColor = ConsoleColor.White;
+                    string yes = ReadLine();
+                    if (yes == "I" || yes == "i")
+                    {
+                        run = true;
+                        AnsiConsole.Write(new Markup("[cyan3]Akkor kezdődjön az új csata![/]"));
+                        Thread.Sleep(2000);
+                        Clear();
+                        for (int x = 0; x < Map.GetLength(0); x++)
+                        {
+                            for (int y = 0; y < Map.GetLength(1); y++)
+                            {
+                                Map[x, y] = 0;
+                            }
+                        }
+                        for (int x = 0; x < AI_Map.GetLength(0); x++)
+                        {
+                            for (int y = 0; y < AI_Map.GetLength(1); y++)
+                            {
+                                AI_Map[x, y] = 0;
+                            }
+                        }
+                        game.PrintMap(Map, AI_Map);
+                        game.AIGenerate(AI_Map);
+                        game.Menu(EnemyShips, Map, AI_Map);
+                    }
+                    else if (yes == "N" || yes == "n")
+                    {
+                        Clear();
+                        AnsiConsole.Write(new Markup("[cyan3]Reméljük hamar viszont látunk![/]"));
+                        Environment.Exit(0);
+                    }
+                }
+                else
+                {
+                    game.AI_Shoot(Map, AI_Map, FriendlyShips);
+                    if (FriendlyShips[0] == 0 && FriendlyShips[1] == 0 && FriendlyShips[2] == 0 && FriendlyShips[3] == 0 && FriendlyShips[4] == 0)
+                    {
+                        run = false;
+                        Clear();
+                        game.PrintMap(Map, AI_Map);
+                        AnsiConsole.Write(new Markup("[red1]Sajnos az ellenség elsüllyesztette az összes hajódat, ezzel elvesztetted a csatát![/]"));
+                    }
+                    if (!run)
+                    {
+                        WriteLine(" ");
+                        AnsiConsole.Write(new Markup("[cyan3]Szeretnél még egyet játszani? (I/N)[/]"));
+                        WriteLine(" ");
+                        ForegroundColor = ConsoleColor.White;
+                        string yes = ReadLine();
+                        if (yes == "I" || yes == "i")
+                        {
+                            run = true;
+                            AnsiConsole.Write(new Markup("[cyan3]Akkor kezdődjön az új csata![/]"));
+                            Thread.Sleep(2000);
+                            Clear();
+                            for (int x = 0; x < Map.GetLength(0); x++)
+                            {
+                                for (int y = 0; y < Map.GetLength(1); y++)
+                                {
+                                    Map[x, y] = 0;
+                                }
+                            }
+                            for (int x = 0; x < AI_Map.GetLength(0); x++)
+                            {
+                                for (int y = 0; y < AI_Map.GetLength(1); y++)
+                                {
+                                    AI_Map[x, y] = 0;
+                                }
+                            }
+                            game.PrintMap(Map, AI_Map);
+                            game.AIGenerate(AI_Map);
+                            game.Menu(EnemyShips, Map, AI_Map);
+                        }
+                        else if (yes == "N" || yes == "n")
+                        {
+                            Clear();
+                            AnsiConsole.Write(new Markup("[cyan3]Reméljük hamar viszont látunk![/]"));
+                            Environment.Exit(0);
+                        }
+                    }
+                }
             }
         }
     }
