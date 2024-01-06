@@ -961,6 +961,113 @@ namespace Torpedo
 
         }
 
+        private bool didShootGoodBefore = false;
+        private int[] lastGoodCoords = new int[2];
+
+        private int tries = 0;
+
+        public int[] AiMoveToNext(int[,] map) {
+            Random rnd = new Random();
+
+            int side = rnd.Next(0, 3);
+
+            int shootRow = lastGoodCoords[0];
+            int shootCol = lastGoodCoords[1];
+
+            bool isRowLeftOccupied = false;
+            bool isRowRightOccupied = false;
+
+            bool isColLeftOccupied = false;
+            bool isColRightOccupied = false;
+
+            bool isOccupiedOnAllSides =
+                isRowLeftOccupied &&
+                isRowRightOccupied &&
+                isColLeftOccupied &&
+                isColRightOccupied;
+
+            while (map[shootRow, shootCol] == -2 && !isOccupiedOnAllSides) {
+                side = rnd.Next(0, 3);
+
+                isOccupiedOnAllSides =
+                    isRowLeftOccupied &&
+                    isRowRightOccupied &&
+                    isColLeftOccupied &&
+                    isColRightOccupied;
+
+                shootRow = lastGoodCoords[0];
+                shootCol = lastGoodCoords[1];
+
+                switch (side) {
+                    case 0:
+                        if (shootCol == 0) {
+                            isColLeftOccupied = true;
+
+                            continue;
+                        }
+
+                        shootCol--;
+
+                        if (map[shootRow, shootCol] == -2) {
+                            isColLeftOccupied = true;
+                        }
+
+                        break;
+                    case 1:
+                        if (shootCol == 9) {
+                            isColRightOccupied = true;
+
+                            continue;
+                        }
+
+                        shootCol++;
+
+                        if (map[shootRow, shootCol] == -2) {
+                            isColRightOccupied = true;
+                        }
+
+                        break;
+                    case 2:
+                        if (shootRow == 0) {
+                            isRowLeftOccupied = true;
+
+                            continue;
+                        }
+
+                        shootRow--;
+
+                        if (map[shootRow, shootCol] == -2) {
+                            isRowLeftOccupied = true;
+                        }
+
+                        break;
+                    case 3:
+                        if (shootRow == 9) {
+                            isRowRightOccupied = true;
+
+                            continue;
+                        }
+
+                        shootRow++;
+
+                        if (map[shootRow, shootCol] == -2) {
+                            isRowRightOccupied = true;
+                        }
+
+                        break;
+                }
+            }
+
+            if (isOccupiedOnAllSides) {
+                shootRow = -1;
+                shootCol = -1;
+
+                didShootGoodBefore = false;
+            }
+
+            return new [] { shootRow, shootCol };
+        }
+
         public void AI_Shoot(int[,] map, int[,] aimap, int[] friendlyships)
         {
             if (manual)
@@ -978,6 +1085,17 @@ namespace Torpedo
             int shootRow = rnd.Next(0, 10);
             int shootCol = rnd.Next(0, 10);
 
+            if (didShootGoodBefore) {
+                tries = 0;
+
+                int[] aiii = AiMoveToNext(map);
+
+                if (aiii[0] != -1) {
+                    shootRow = aiii[0];
+                    shootCol = aiii[1];
+                }
+            }
+
             //Ha már létezik egy elem a szótárban akkor a következő random
             //elemet nem adjuk hozzá, ha még nem létezik akkor hozzáadjuk
             while (map[shootRow,shootCol] < 0)
@@ -987,12 +1105,16 @@ namespace Torpedo
                 shootCol = rnd.Next(0, 10);
             }
 
-            if (map[shootRow, shootCol] == 1)
-            {
-                map[shootRow, shootCol] = -2;              
-                Clear();
-                PrintMap(map, aimap);
+            if (map[shootRow, shootCol] == 1) {
+                map[shootRow, shootCol] = -2;
+
+                lastGoodCoords[0] = shootRow;
+                lastGoodCoords[1] = shootCol;
+
+                didShootGoodBefore = true;
+
                 AnsiConsole.Write(new Markup("[maroon]Az ellenség eltalálta az egyik hajódat![/]"));
+
                 AI_Sink(map, friendlyships);
             }
             else
@@ -1018,7 +1140,6 @@ namespace Torpedo
             ships[2] = FriendlyShipsCoords[2].ToString().Split(';');
             ships[3] = FriendlyShipsCoords[3].ToString().Split(';');
             ships[4] = FriendlyShipsCoords[4].ToString().Split(';');
-
 
             int[][] intShips = new int[5][];
 
