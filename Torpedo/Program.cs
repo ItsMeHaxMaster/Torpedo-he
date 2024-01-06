@@ -728,14 +728,14 @@ namespace Torpedo
 
             if (target.Length !< 2 || target.Length !> 4)
             {
-                AnsiConsole.Write(new Markup("[red1]Helytelen hely![/]"));
+                AnsiConsole.Write(new Markup("[red1]Nem érvényes koordináta![/]"));
                 Shoot(map, aimap, enemyships);
                 return;
             }
             
             if (!chars.Contains(target[0]))
             {
-                AnsiConsole.Write(new Markup("[red1]Helytelen hely![/]"));
+                AnsiConsole.Write(new Markup("[red1]Nem érvényes koordináta![/]"));
                 Shoot(map, aimap, enemyships);
             }
 
@@ -746,13 +746,13 @@ namespace Torpedo
             {
                 if (Int32.Parse(a.ToString()) > 10 || Int32.Parse(a.ToString()) < 1)
                 {
-                    AnsiConsole.Write(new Markup("[red1]Helytelen hely![/]"));
+                    AnsiConsole.Write(new Markup("[red1]Nem érvényes koordináta![/]"));
                     Shoot(map, aimap, enemyships);
                 }
             }
             catch
             {
-                AnsiConsole.Write(new Markup("[red1]Helytelen hely![/]"));
+                AnsiConsole.Write(new Markup("[red1]Nem érvényes koordináta![/]"));
                 Shoot(map, aimap, enemyships);
             }
 
@@ -770,19 +770,23 @@ namespace Torpedo
             {
                 if(aimap[targetX, targetY] == 1)
                 {
-                    aimap[targetX, targetY] = -2;
+                    aimap[targetX, targetY] = -2;                   
+                    Clear();
+                    PrintMap(map, aimap);
                     AnsiConsole.Write(new Markup("[maroon]Találat![/]"));
                     Sink(aimap, enemyships);
                 }
                 else
                 {
-                    aimap[targetX, targetY] = -1;
+                    aimap[targetX, targetY] = -1;                    
+                    Clear();
+                    PrintMap(map, aimap);
                     AnsiConsole.Write(new Markup("[grey58]A francba! Nincs találat![/]"));
                 }
             }
             else
             {
-                AnsiConsole.Write(new Markup("[red1]Helytelen hely![/]"));
+                AnsiConsole.Write(new Markup("[red1]Nem érvényes koordináta![/]"));
                 Shoot(map, aimap, enemyships);
             }
 
@@ -917,6 +921,7 @@ namespace Torpedo
 
             if (Car == 5)
             {
+                WriteLine();
                 AnsiConsole.Write(new Markup("[greenyellow]Az ellenség Repülőgép-hordozója elsüllyedt![/]"));
                 EnemySinkedC = true;
                 enemyships[0] = 0;
@@ -924,6 +929,7 @@ namespace Torpedo
            
             if (Bat == 4)
             {
+                WriteLine();
                 AnsiConsole.Write(new Markup("[greenyellow]Az ellenség Csatahajója elsüllyedt![/]"));
                 EnemySinkedB = true;
                 enemyships[1] = 0;
@@ -931,6 +937,7 @@ namespace Torpedo
 
             if (Des == 3)
             {
+                WriteLine();
                 AnsiConsole.Write(new Markup("[greenyellow]Az ellenség Rombolója elsüllyedt![/]"));
                 EnemySinkedD = true;
                 enemyships[2] = 0;
@@ -938,6 +945,7 @@ namespace Torpedo
 
             if (Sub == 3)
             {
+                WriteLine();
                 AnsiConsole.Write(new Markup("[greenyellow]Az ellenség Tengeralattjárója elsüllyedt![/]"));
                 EnemySinkedS = true;
                 enemyships[3]= 0;
@@ -945,6 +953,7 @@ namespace Torpedo
 
             if (Pat == 2)
             {
+                WriteLine();
                 AnsiConsole.Write(new Markup("[greenyellow]Az ellenség Járőrhajója elsüllyedt![/]"));
                 EnemySinkedP = true;
                 enemyships[4] = 0;
@@ -980,13 +989,17 @@ namespace Torpedo
 
             if (map[shootRow, shootCol] == 1)
             {
-                map[shootRow, shootCol] = -2;
+                map[shootRow, shootCol] = -2;              
+                Clear();
+                PrintMap(map, aimap);
                 AnsiConsole.Write(new Markup("[maroon]Az ellenség eltalálta az egyik hajódat![/]"));
                 AI_Sink(map, friendlyships);
             }
             else
             {
                 map[shootRow, shootCol] = -1;
+                Clear();
+                PrintMap(map, aimap);
                 AnsiConsole.Write(new Markup("[grey58]Az ellenség lövése nem talált![/]"));
             }
         }
@@ -1118,6 +1131,7 @@ namespace Torpedo
 
             if (AICar == 5)
             {
+                WriteLine();
                 AnsiConsole.Write(new Markup("[greenyellow]A Repülőgép-hordozód elsüllyedt![/]"));
                 FriendlySinkedC = true;
                 friendlyships[0] = 0;
@@ -1125,6 +1139,7 @@ namespace Torpedo
 
             if (AIBat == 4)
             {
+                WriteLine();
                 AnsiConsole.Write(new Markup("[greenyellow]A Csatahajód elsüllyedt![/]"));
                 FriendlySinkedB = true;
                 friendlyships[1] = 0;
@@ -1132,6 +1147,7 @@ namespace Torpedo
 
             if (AIDes == 3)
             {
+                WriteLine();
                 AnsiConsole.Write(new Markup("[greenyellow]A Rombolód elsüllyedt![/]"));
                 FriendlySinkedD = true;
                 friendlyships[2] = 0;
@@ -1139,6 +1155,7 @@ namespace Torpedo
 
             if (AISub == 3)
             {
+                WriteLine();
                 AnsiConsole.Write(new Markup("[greenyellow]A Tengeralattjáród elsüllyedt![/]"));
                 FriendlySinkedS = true;
                 friendlyships[3] = 0;
@@ -1146,6 +1163,7 @@ namespace Torpedo
 
             if (AIPat == 2)
             {
+                WriteLine();
                 AnsiConsole.Write(new Markup("[greenyellow]A Járőrhajód elsüllyedt![/]"));
                 FriendlySinkedP = true;
                 friendlyships[4] = 0;
@@ -1432,7 +1450,7 @@ namespace Torpedo
             }
             else
             {
-                AnsiConsole.Write(new Markup("[red1]Balfasz[/]"));
+                AnsiConsole.Write(new Markup("[red1]Rossz érték![/]"));
                 Menu(ships, map, aimap);
             }
 
