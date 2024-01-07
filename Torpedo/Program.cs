@@ -441,7 +441,6 @@ namespace Torpedo
                     }
                     else
                     {
-
                         AnsiConsole.Write(new Markup("[red1]Rossz a beírt koordináta![/]"));
                         Question(ships, map, aimap, Win, Lose);
                     }
@@ -452,7 +451,6 @@ namespace Torpedo
             }
             else
             {
-
                 AnsiConsole.Write(new Markup("[red1]Nincs több ilyen hajótípusod![/]"));
                 Question(ships, map, aimap, Win, Lose);
             }
@@ -518,7 +516,6 @@ namespace Torpedo
                 AnsiConsole.Write(new Markup("[red1]Biztos jól adtad meg?[/]"));
                 Question(ships, map, aimap, Win, Lose);
             }
-
 
         }
 
