@@ -994,6 +994,7 @@ namespace Torpedo
             }
         }
 
+        // jobb ai
         private bool didShootGoodBefore = false;
         private int[] lastGoodCoords = new int[2];
 
@@ -1004,6 +1005,7 @@ namespace Torpedo
 
             int side = rnd.Next(0, 3);
 
+            // Eltároljuk a legutolsó jó koordinátákat
             int shootRow = lastGoodCoords[0];
             int shootCol = lastGoodCoords[1];
 
@@ -1019,18 +1021,27 @@ namespace Torpedo
                 isColLeftOccupied &&
                 isColRightOccupied;
 
+            // Megkeressük az első jó koordinátát
             while (map[shootRow, shootCol] == -2 && !isOccupiedOnAllSides) {
+                // Kiválasztunk egy oldalt
+                // 0 - bal
+                // 1 - jobb
+                // 2 - fel
+                // 3 - le
                 side = rnd.Next(0, 3);
 
+                // megvizsgáljuk, hogy az összes oldalról van-e foglalt mező
                 isOccupiedOnAllSides =
                     isRowLeftOccupied &&
                     isRowRightOccupied &&
                     isColLeftOccupied &&
                     isColRightOccupied;
 
+                // Visszaállítjuk a koordinátákat
                 shootRow = lastGoodCoords[0];
                 shootCol = lastGoodCoords[1];
 
+                // Megnézzük, hogy az oldal foglalt-e, ha nem akkor arra irányitjuk a kooridnátákat
                 switch (side) {
                     case 0:
                         if (shootCol == 0) {
@@ -1043,6 +1054,8 @@ namespace Torpedo
 
                         if (map[shootRow, shootCol] == -2) {
                             isColLeftOccupied = true;
+
+                            shootCol++;
                         }
 
                         break;
@@ -1057,6 +1070,8 @@ namespace Torpedo
 
                         if (map[shootRow, shootCol] == -2) {
                             isColRightOccupied = true;
+
+                            shootCol--;
                         }
 
                         break;
@@ -1071,6 +1086,8 @@ namespace Torpedo
 
                         if (map[shootRow, shootCol] == -2) {
                             isRowLeftOccupied = true;
+
+                            shootRow++;
                         }
 
                         break;
@@ -1085,12 +1102,16 @@ namespace Torpedo
 
                         if (map[shootRow, shootCol] == -2) {
                             isRowRightOccupied = true;
+
+                            shootRow--;
                         }
 
                         break;
                 }
             }
 
+            // Megizsgáljuk hogy az összes oldalról van-e foglalt mező
+            // ha igen akkor -1,-1-et adunk vissza
             if (isOccupiedOnAllSides) {
                 shootRow = -1;
                 shootCol = -1;
@@ -1118,11 +1139,14 @@ namespace Torpedo
             int shootRow = rnd.Next(0, 10);
             int shootCol = rnd.Next(0, 10);
 
+            // Megnézzuk hogy volt-e találatunk előzőleg
             if (didShootGoodBefore) {
                 tries = 0;
 
                 int[] aiii = AiMoveToNext(map);
 
+                // megnézzük hogy a visszaadott koordináták nem -1,-1-e
+                // ha nem azok akkor a visszaadott koordinátákat használjuk
                 if (aiii[0] != -1) {
                     shootRow = aiii[0];
                     shootCol = aiii[1];
@@ -1476,27 +1500,33 @@ namespace Torpedo
         {
             Random randInt = new Random();
 
+            // Lerakjuk az öt hajót
             for (int i = 0; i < 5; i++)
             {
+                // Legeneráljuk, hogy vízszintesen vagy függőlegesen legyen-e
                 bool isHorizontal = randInt.Next(0, 100) > 50;
 
                 //Console.WriteLine(shipSizes[i + 1]);
 
                 bool cant = true;
 
+                // addig probálkozunk míg `cant` nem lesz `false`
                 while (cant)
                 {
                     if (isHorizontal)
                     {
+                        // generáluunk egy random oszlopot és sort
                         int columnRand = randInt.Next(0, 10);
                         int rowRand = randInt.Next(0, 10 - shipSizes[i + 1]);
 
+                        // megadjuk a hajó kooridnátáit
                         int fromX = rowRand;
                         int fromY = columnRand;
 
                         int toX = rowRand + shipSizes[i + 1];
                         int toY = columnRand;
 
+                        // Ellenőrzi, hogy el lehet-e helyezni a hajót a megadott helyen
                         if (this.CanPlace(aimap, [fromX, fromY, toX, toY], i + 1))
                         {
                             AI_Place(aimap, [fromX, fromY, toX, toY], i + 1);
@@ -1509,15 +1539,18 @@ namespace Torpedo
                     }
                     else
                     {
+                        // generáluunk egy random oszlopot és sort
                         int rowRand = randInt.Next(0, 10);
                         int columnRand = randInt.Next(0, 10 - shipSizes[i + 1]);
 
+                        // megadjuk a hajó kooridnátáit
                         int fromX = rowRand;
                         int fromY = columnRand;
 
                         int toX = rowRand;
                         int toY = columnRand + shipSizes[i + 1];
 
+                        // Ellenőrzi, hogy el lehet-e helyezni a hajót a megadott helyen
                         if (this.CanPlace(aimap, [fromX, fromY, toX, toY], i + 1))
                         {
                             AI_Place(aimap, [fromX, fromY, toX, toY], i + 1);
@@ -1540,11 +1573,14 @@ namespace Torpedo
             int toX = coords[2];
             int toY = coords[3];
 
+            // Megnézzük hogy a koordináták egy sorban vannak-e
             if (fromX == toX)
             {
+                // Megnézzük hogy a letteni kivánt hajó hossza megfelel-e a hajó típusának
                 if (toY - fromY != shipSizes[shipType])
                     return false;
 
+                // Megnézzük hogy a koordináták között van-e foglalt mező
                 for (int i = fromY; i <= toY; i++)
                     if (map[i, fromX] != 0)
                         return false;
@@ -1552,11 +1588,14 @@ namespace Torpedo
                 return true;
             }
 
+            // Megnézzük hogy a koordináták egy oszlopban vannak-e
             if (fromY == toY)
             {
+                // Megnézzük hogy a letteni kivánt hajó hossza megfelel-e a hajó típusának
                 if (toX - fromX != shipSizes[shipType])
                     return false;
 
+                // Megnézzük hogy a koordináták között van-e foglalt mező
                 for (int i = fromX; i <= toX; i++)
                     if (map[fromY, i] != 0)
                         return false;
@@ -1580,6 +1619,7 @@ namespace Torpedo
             else
                 EnemyShipsCoords.Add(fromX + ";" + fromY + ";" + toX + ";" + toY);
 
+            // Lehelyezzük a hajót
             if (fromX == toX)
             {
                 for (int i = fromY; i < toY; i++)
