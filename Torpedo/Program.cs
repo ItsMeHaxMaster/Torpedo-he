@@ -1,17 +1,7 @@
 ﻿using Spectre.Console;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Runtime.ConstrainedExecution;
 using System.Text;
-using System.Threading;
-using System.Threading.Channels;
-using System.Threading.Tasks;
 using static System.Console;
-
 
 namespace Torpedo
 {
@@ -89,7 +79,7 @@ namespace Torpedo
         {
 
             //Itt tudjuk megjeleníteni az ellenség hajóit ha kell a teszteléshez
-            bool visible = false;
+            bool visible = true;
 
             //Meghívjuk a Header függvényt, hogy az is ki legyen írva
             PrintHeader();
@@ -2065,3 +2055,8 @@ namespace Torpedo
         }
     }
 }
+
+//Ezt a játékot HaxMaster, TheClashFruit, és HerBen készítette
+//Ha tetszik a játék egy "Star"-t megköszönünk!
+//Az alábbi linken érhető el:
+//https://github.com/ItsMeHaxMaster/Torpedo-he
