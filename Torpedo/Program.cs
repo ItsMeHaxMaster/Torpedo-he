@@ -18,7 +18,7 @@ namespace Torpedo
     class Torpedo
     {
 
-        //Könyvtárak létrehozása a számok és betűk átkonvertálásához
+        //Könyvtárak létrehozása a számok és betűk átkonvertálásához + Gábor kódjához
 
         static Dictionary<int, char> mapIntToCharDict = new Dictionary<int, char>()
         {
@@ -67,7 +67,7 @@ namespace Torpedo
             {5, 2}
         };
 
-        // A térkép fejlécének kiírása (az oszlopok számai és az üres mező bal felső sarokban)
+        // A térkép fejlécének kiírása (az oszlopok számai és az ikonok a bal felső sarokban)
         public void PrintHeader()
         {
 
@@ -87,12 +87,13 @@ namespace Torpedo
         public void PrintMap(int[,] map, int[,] aimap, ref int Win, ref int Lose)
         {
 
+            //Itt tudjuk megjeleníteni az ellenség hajóit ha kell a teszteléshez
             bool visible = false;
 
-            //Meghívjuk a Header függvényt, hogy az is meglegyen
+            //Meghívjuk a Header függvényt, hogy az is ki legyen írva
             PrintHeader();
             WriteLine();
-            //Létrehozzuk a row character változót, a map sorainak sorszámozásához betűkkel. (A, B, C, D.....)
+            //Létrehozzuk a row1 és row2 character változókat, a map sorainak sorszámozásához betűkkel. (A, B, C, D.....)
             char row1 = 'A';
             char row2 = 'A';
 
