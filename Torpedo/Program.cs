@@ -925,29 +925,35 @@ namespace Torpedo
             //------------------------------------------------------------
             //Gábor része
 
+            // Létrehozzuk a hajók koordinátáit tartalmazó tömböt
             string[][] ships = new string[5][];
 
+            // berakjuk a koordinátákat egy tömbbe
             ships[0] = EnemyShipsCoords[0].ToString().Split(';');
             ships[1] = EnemyShipsCoords[1].ToString().Split(';');
             ships[2] = EnemyShipsCoords[2].ToString().Split(';');
             ships[3] = EnemyShipsCoords[3].ToString().Split(';');
             ships[4] = EnemyShipsCoords[4].ToString().Split(';');
 
-
             int[][] intShips = new int[5][];
 
+            // átmegyünk az összes tömbon
             for (int i = 0; i < ships.Length; i++)
             {
+                // létrehozunk egy ideiglenes tömböt
                 int[] thisInt = new int[4];
 
+                // átmágyünk az összes elemen és int-é alakítjuk
                 for (int j = 0; j < ships[i].Length; j++)
                 {
                     thisInt[j] = Int32.Parse(ships[i][j]);
                 }
 
+                // hozzáadjuk az ideiglenes tomböt a tömböket tartalmazö tömbhöz
                 intShips[i] = thisInt;
             }
 
+            // Kiszedjük a tömböket külön változókba
             int[] Carrier = intShips[0];
             int[] BattleShip = intShips[1];
             int[] Destroyer = intShips[2];
