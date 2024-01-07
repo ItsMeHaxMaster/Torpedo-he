@@ -32,3 +32,5 @@ We welcome contributions from the community! If you'd like to contribute to Torp
 ## License
 
 Torpedó is released under the [GNU General Public License v3.0](LICENSE).
+
+> A Copilot-al lett generálva a README.
