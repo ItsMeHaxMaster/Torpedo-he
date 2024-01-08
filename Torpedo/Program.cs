@@ -374,7 +374,7 @@ namespace Torpedo
             //Bool változó létrehozása, arra, hogyha már van a mezőn hajó lehelyezve, azt jelezze
             bool exists = false;
 
-            //Megvizsgáljuk, hogy van-e még olyan hajó amit leakar helyezni a player 
+            //Megvizsgáljuk, hogy van-e még olyan hajó amit le akar helyezni a player 
             if (ships[ship - 1] > 0)
             {
                 //Megnézzük, hogy a két bekért érték (a from és a to) X értéke egyezik, ha igen akkor
@@ -525,7 +525,7 @@ namespace Torpedo
             ForegroundColor = ConsoleColor.White;
 
             //Létrehozzuk előre azokat a változókat amiket használni fogunk,
-            //mivel, ha a "while"-on belül hoznánk létre, akkor a "whil"-on
+            //mivel, ha a "while"-on belül hoznánk létre, akkor a "while"-on
             //kívül nem tudnánk használni őket
             int fromX = 0;
             string a = "a";
@@ -540,7 +540,7 @@ namespace Torpedo
             //Ez a ciklus arra van, hogyha rosszul adnánk meg a bekért értéket (pl. aaaa), ne crasheljen be a játék
             while (bajvanmore)
             {
-                //Bekérjük az első értéket, amit nagybetűvé convertálunk
+                //Bekérjük az első értéket, amit nagybetűvé con cvertálunk
                 string from = ReadLine().ToUpper();
                 
                 //Ezekkel az "if"-ekkel ellenőrizzük, hogy jól írtuk-e be a bekért értéket
@@ -587,19 +587,18 @@ namespace Torpedo
                 //Bekérjük a második értéket és megismételjük a fenti dolgokat
                 string to = ReadLine().ToUpper();
 
-                if (from.Length! < 2 || from.Length! > 4)
+                if (to.Length! < 2 || to.Length! > 4)
                 {
                     AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
                 }
 
-                if (!chars.Contains(from[0]))
+                if (!chars.Contains(to[0]))
                 {
                     AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
                 }
 
-                toX = mapCharToIntDict[from[0]];
+                toX = mapCharToIntDict[to[0]];
                 b = to.Remove(0, 1);
-
 
                 try
                 {
@@ -613,12 +612,14 @@ namespace Torpedo
                     AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
                 }
 
+                WriteLine(toY);
                 toY = Int32.Parse(b) - 1;
 
                 //Ha mindenhol jól adtunk meg mident, akkor ezzel kilépünk a ciklusból
                 bajvanmore = false;
             }
 
+            WriteLine(fromX.ToString() + fromY.ToString() + toX.ToString() + toY.ToString());
 
             //A létrejött int változókat egy tömbbe rakjuk, hogy könnyen tudjuk használni a "Place" függvényben is
             int[] coordinates = { fromX, fromY, toX, toY };
@@ -632,7 +633,7 @@ namespace Torpedo
                 {
                     //Ezeknél az if-eknél ellenőrizzük, hogy megfelelő hosszúságot adott-e meg a hajók lehelyezésénél
                     if (fromY - toY == 4 || fromY - toY == -4)
-                    {
+                    {                        
                         //Meghívjuk a "Place" függvényt és nyugtázzuk a sikeres a lehelyezést
                         Place(ships, map, aimap, ship, coordinates, Win, Lose);
                         AnsiConsole.Write(new Markup("[green1]Sikeres a lehelyezés![/]"));
@@ -1110,7 +1111,7 @@ namespace Torpedo
                 isColRightOccupied;
 
             // Megkeressük az első jó koordinátát
-            while (map[shootRow, shootCol] == -2 && !isOccupiedOnAllSides) {
+            while (map[shootRow, shootCol] < 0 && !isOccupiedOnAllSides) {
                 // Kiválasztunk egy oldalt
                 // 0 - bal
                 // 1 - jobb
@@ -1857,8 +1858,7 @@ namespace Torpedo
                     if (loseCount < int.Parse(counts[1]))
                     {
                         loseCount = int.Parse(counts[1]);
-                    }
-
+                    }                   
                     line = sr.ReadLine();
                 }
                 sr.Close();
