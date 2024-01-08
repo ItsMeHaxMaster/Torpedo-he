@@ -194,7 +194,36 @@ namespace Torpedo
             WriteLine();
             AnsiConsole.Write(new Markup("[gold1]🥇Wins: [/]" + Win));
             WriteLine();
-            AnsiConsole.Write(new Markup("[red3]💥Losses: [/]" + Lose));
+            AnsiConsole.Write(new Markup("[maroon]💥Losses: [/]" + Lose));
+            WriteLine();
+
+            float winratio = float.Parse(Win.ToString()) / (float.Parse(Win.ToString()) + float.Parse(Lose.ToString())) * 100;
+
+            if (Win == 0 && Lose == 0)
+            {
+                AnsiConsole.Write(new Markup("[gray58]⚔️Win ratio: Nincs adat[/]"));
+            }
+            else if (winratio <= 100 && winratio >= 90)
+            {
+                AnsiConsole.Write(new Markup("[green1]⚔️Win ratio: " + winratio + " %[/]"));
+            }
+            else if (winratio <= 89 && winratio >= 75)
+            {
+                AnsiConsole.Write(new Markup("[green3]⚔️Win ratio: " + winratio + " %[/]"));
+            }
+            else if (winratio <= 74 && winratio >= 50)
+            {
+                AnsiConsole.Write(new Markup("[darkorange]⚔️Win ratio: " + winratio + " %[/]"));
+            }
+            else if (winratio <= 49 && winratio >= 25)
+            {
+                AnsiConsole.Write(new Markup("[red1]⚔️Win ratio: " + winratio + " %[/]"));
+            }
+            else if (winratio <= 24)
+            {
+                AnsiConsole.Write(new Markup("[darkred_1]⚔️Win ratio: " + winratio + " %[/]"));
+            }
+
             WriteLine();
             WriteLine();
         }
@@ -459,7 +488,7 @@ namespace Torpedo
             if (manual)
                 ReadKey();
             else if (manual == false)
-                Thread.Sleep(1000);
+                Thread.Sleep(sleep);
             Clear();
             PrintMap(map, aimap, ref Win, ref Lose);
 
@@ -776,7 +805,7 @@ namespace Torpedo
             if (manual)
                 ReadKey();
             else if (manual == false)
-                Thread.Sleep(1000);
+                Thread.Sleep(sleep);
             Clear();
             PrintMap(map, aimap, ref Win, ref Lose);
 
@@ -1216,7 +1245,7 @@ namespace Torpedo
             if (manual)
                 ReadKey();
             else if (manual == false)
-                Thread.Sleep(1000);
+                Thread.Sleep(sleep);
             Clear();
             PrintMap(map, aimap, ref Win, ref Lose);
 
@@ -1757,7 +1786,10 @@ namespace Torpedo
 
         bool selfAI = false;
         bool manual = false;
+
         char[] chars = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J' };
+
+        int sleep = 0;
 
         //Létrehozunk egy Menu függvényt,
         //a játék elején lévő kérdések kiíráshoz és használáshoz
@@ -1767,22 +1799,27 @@ namespace Torpedo
             Clear();
             PrintMap(map, aimap, ref Win, ref Lose);
 
-            AnsiConsole.Write(new Markup("[cyan3]Ha azt szeretnéd hogy 1 másodperc múlva eltűnjenek az 'értesítések' a képernyőről nyomd meg az 1-et." + Environment.NewLine
+            AnsiConsole.Write(new Markup("[cyan3]Ha te szeretnéd be írni, hogy hány másodperc múlva tűnjenek el az 'értesítések' a képernyőről nyomd meg az 1-et." + Environment.NewLine
                 + "Ha azt szeretnéd, hogy csak akkor tűnjenek el, ha megnyomsz egy gombot, nyomd meg a 2-t.[/]"));
             WriteLine(" ");
             ForegroundColor = ConsoleColor.White;
 
             //Bekérjük a számot
             string szöveg = ReadLine();
-            //Átkonvertáljuk ezt a számot int-é, hogy használni tudjuk 
-            int gyász = Int32.Parse(szöveg.ToString());
 
             //Ezt gondolom nem kell magyarázni
-            if (gyász == 1)
+            if (Int32.Parse(szöveg.ToString()) == 1)
             {
                 manual = false;
+                AnsiConsole.Write(new Markup("[cyan3]Add meg, hogy hány másodperc múlva tűnjenek el az értesítések. (pl. 1 vagy 1.5)[/]"));
+                WriteLine();
+                string answer = ReadLine();
+                float asd = float.Parse(sleep.ToString());
+                asd = asd* 1000;
+
+                sleep = Int32.Parse(asd.ToString());
             }
-            else if (gyász == 2)
+            else if (Int32.Parse(szöveg.ToString()) == 2)
             {
                 manual = true;
             }
@@ -1799,9 +1836,8 @@ namespace Torpedo
 
             //Ugyanaz mint az előbb
             string lehelyezés = ReadLine();
-            int rák = Int32.Parse(lehelyezés.ToString());
 
-            if (rák == 1)
+            if (Int32.Parse(lehelyezés.ToString()) == 1)
             {
                 //Meghívjuk 5-ször a "Question" függvényt, ezzel elindítva a bekérdezést
                 for (int i = 0; i < 5; i++)
@@ -1809,7 +1845,7 @@ namespace Torpedo
                     Question(ships, map, aimap, Win, Lose);
                 }
             }
-            else if (rák == 2)
+            else if (Int32.Parse(lehelyezés.ToString()) == 2)
             {
                 //Az AIGenerate függvényt használjuk, csak a saját map-el,
                 //ezzel megspórolva egy függvényt
