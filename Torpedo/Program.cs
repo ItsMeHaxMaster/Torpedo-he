@@ -1,5 +1,6 @@
 ﻿using Spectre.Console;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Text;
 using static System.Console;
 
@@ -630,12 +631,12 @@ namespace Torpedo
                         Clear();
                         PrintMap(map, aimap, ref Win, ref Lose);
                         AnsiConsole.Write(new Markup("[cyan3]Add meg a hajó sorszámát! (1. Repülőgép-hordozó(5), " +
-                "2. Csatahajó(4), 3. Romboló(3), 4. Tengeralattjáró(3), 5. Járőrhajó(2) )[/]"));
+                        "2. Csatahajó(4), 3. Romboló(3), 4. Tengeralattjáró(3), 5. Járőrhajó(2) )[/]"));
                         ForegroundColor = ConsoleColor.White;
                         WriteLine();
                         WriteLine(answer);
                         AnsiConsole.Write(new Markup("[cyan3]Add meg, a hajó kezdőponti és végponti koordinátáit!" + Environment.NewLine
-                + "(Fontos hogy ELŐSZÖR A KEZDŐ koordinátát adjuk meg, UTÁNA AZ UTOLSÓ koordinátát!!!)[/]"));
+                        + "(Fontos hogy ELŐSZÖR A KEZDŐ koordinátát adjuk meg, UTÁNA AZ UTOLSÓ koordinátát!!!)[/]"));
                         WriteLine();
                         ForegroundColor = ConsoleColor.White;
                     }
@@ -688,12 +689,12 @@ namespace Torpedo
                         Clear();
                         PrintMap(map, aimap, ref Win, ref Lose);
                         AnsiConsole.Write(new Markup("[cyan3]Add meg a hajó sorszámát! (1. Repülőgép-hordozó(5), " +
-                "2. Csatahajó(4), 3. Romboló(3), 4. Tengeralattjáró(3), 5. Járőrhajó(2) )[/]"));
+                        "2. Csatahajó(4), 3. Romboló(3), 4. Tengeralattjáró(3), 5. Járőrhajó(2) )[/]"));
                         ForegroundColor = ConsoleColor.White;
                         WriteLine();
                         WriteLine(answer);
                         AnsiConsole.Write(new Markup("[cyan3]Add meg, a hajó kezdőponti és végponti koordinátáit!" + Environment.NewLine
-                + "(Fontos hogy ELŐSZÖR A KEZDŐ koordinátát adjuk meg, UTÁNA AZ UTOLSÓ koordinátát!!!)[/]"));
+                        + "(Fontos hogy ELŐSZÖR A KEZDŐ koordinátát adjuk meg, UTÁNA AZ UTOLSÓ koordinátát!!!)[/]"));
                         WriteLine();
                         WriteLine(answer2);
                     }                    
@@ -855,15 +856,24 @@ namespace Torpedo
 
         public void Shoot(int[,] map, int[,] aimap, int[] enemyships, int Win, int Lose)
         {
-            if (manual)
-                ReadKey();
-            else if (manual == false)
-                Thread.Sleep(sleep);
+
+            if (first)
+            {
+                Thread.Sleep(500);
+                first = false;
+            }
+            else
+            {
+                if (manual)
+                    ReadKey();
+                else if (manual == false)
+                    Thread.Sleep(sleep);
+            }
             Clear();
             PrintMap(map, aimap, ref Win, ref Lose);
 
             AnsiConsole.Write(new Markup("[cyan3]Löveg betöltve! Adja meg a cél kordinátákat![/]"));
-            WriteLine(" ");
+            WriteLine();
             ForegroundColor = ConsoleColor.White;
 
             //Bekérjük a koordinátát
@@ -1846,6 +1856,9 @@ namespace Torpedo
 
         int answer = 0;
         string answer2 = null;
+        string answer3 = "a";
+
+        bool first = true;
 
         //Létrehozunk egy Menu függvényt,
         //a játék elején lévő kérdések kiíráshoz és használáshoz
@@ -1855,63 +1868,120 @@ namespace Torpedo
             Clear();
             PrintMap(map, aimap, ref Win, ref Lose);
 
+            bool nocrash = true;
+            bool nocrash2 = true;
+
             AnsiConsole.Write(new Markup("[cyan3]Ha te szeretnéd be írni, hogy hány másodperc múlva tűnjenek el az 'értesítések' a képernyőről nyomd meg az 1-et." + Environment.NewLine
-                + "Ha azt szeretnéd, hogy csak akkor tűnjenek el, ha megnyomsz egy gombot, nyomd meg a 2-t.[/]"));
-            WriteLine(" ");
+            + "Ha azt szeretnéd, hogy csak akkor tűnjenek el, ha megnyomsz egy gombot, nyomd meg a 2-t.[/]"));
+            WriteLine();
             ForegroundColor = ConsoleColor.White;
 
-            //Bekérjük a számot
-            string szöveg = ReadLine();
+            while (nocrash)
+            {
+                try
+                {
 
-            //Ezt gondolom nem kell magyarázni
-            if (Int32.Parse(szöveg.ToString()) == 1)
-            {
-                manual = false;
-                AnsiConsole.Write(new Markup("[cyan3]Add meg, hogy hány másodperc múlva tűnjenek el az értesítések. (pl. 1 vagy 1.5)[/]"));
-                WriteLine();
-                string answer = ReadLine();
-                float asd = float.Parse(answer.ToString());
-                asd = asd*1000;
+                    //Bekérjük a számot
+                    string szoveg = ReadLine();
+                    answer3 = szoveg;
 
-                sleep = Int32.Parse(asd.ToString());
-            }
-            else if (Int32.Parse(szöveg.ToString()) == 2)
-            {
-                manual = true;
-            }
-            else
-            {
-                AnsiConsole.Write(new Markup("[red1]Rossz érték![/]"));
-                Menu(ships, map, aimap, Win, Lose);
+                    if (szoveg.Length! < 1 || szoveg.Length! > 1)
+                    {
+                        AnsiConsole.Write(new Markup("[red1]Rossz érték![/]"));
+                    }
+
+                    //Ezt gondolom nem kell magyarázni
+                    if (Int32.Parse(szoveg.ToString()) == 1)
+                    {
+                        manual = false;
+                        AnsiConsole.Write(new Markup("[cyan3]Add meg, hogy hány másodperc múlva tűnjenek el az értesítések. (pl. 1 vagy 1.5)[/]"));
+                        WriteLine();
+                        string answer = ReadLine();
+                        float asd = float.Parse(answer.ToString());
+                        asd = asd * 1000;
+
+                        sleep = Int32.Parse(asd.ToString());
+
+                        nocrash = false;
+                    }
+                    else if (Int32.Parse(szoveg.ToString()) == 2)
+                    {
+                        manual = true;
+
+                        nocrash = false;
+                    }
+                    else
+                    {
+                        WriteLine("c" + szoveg);
+                        AnsiConsole.Write(new Markup("[red1]Rossz érték![/]"));
+                        //Menu(ships, map, aimap, Win, Lose);
+                    }
+                }
+                catch
+                {
+                    Thread.Sleep(500);
+                    Clear();
+                    PrintMap(map, aimap, ref Win, ref Lose);
+                    AnsiConsole.Write(new Markup("[cyan3]Ha te szeretnéd be írni, hogy hány másodperc múlva tűnjenek el az 'értesítések' a képernyőről nyomd meg az 1-et." + Environment.NewLine
+                    + "Ha azt szeretnéd, hogy csak akkor tűnjenek el, ha megnyomsz egy gombot, nyomd meg a 2-t.[/]"));
+                    WriteLine();
+                    ForegroundColor = ConsoleColor.White;
+                }
             }
 
             AnsiConsole.Write(new Markup("[cyan3]Ha te szeretnéd lehelyezni a hajóidat, akkor írj be egy 1-et." + Environment.NewLine
-                + "Ha véletlenszerű lehelyezést szeretnél, írj be egy 2-t.[/]"));
-            WriteLine(" ");
+                    + "Ha véletlenszerű lehelyezést szeretnél, írj be egy 2-t.[/]"));
+            WriteLine();
             ForegroundColor = ConsoleColor.White;
 
-            //Ugyanaz mint az előbb
-            string lehelyezés = ReadLine();
-
-            if (Int32.Parse(lehelyezés.ToString()) == 1)
+            while (nocrash2)
             {
-                //Meghívjuk 5-ször a "Question" függvényt, ezzel elindítva a bekérdezést
-                for (int i = 0; i < 5; i++)
+                try
                 {
-                    Question(ships, map, aimap, Win, Lose);
+                    //Ugyanaz mint az előbb
+                    string lehelyezés = ReadLine();
+
+                    if (lehelyezés.Length! < 1 || lehelyezés.Length! > 1)
+                    {
+                        AnsiConsole.Write(new Markup("[red1]Rossz érték![/]"));
+                    }
+
+                    if (Int32.Parse(lehelyezés.ToString()) == 1)
+                    {
+                        //Meghívjuk 5-ször a "Question" függvényt, ezzel elindítva a bekérdezést
+                        for (int i = 0; i < 5; i++)
+                        {
+                            Question(ships, map, aimap, Win, Lose);
+                        }
+                    }
+                    else if (Int32.Parse(lehelyezés.ToString()) == 2)
+                    {
+                        //Az AIGenerate függvényt használjuk, csak a saját map-el,
+                        //ezzel megspórolva egy függvényt
+                        selfAI = true;
+                        AIGenerate(map);
+                    }
+                    else
+                    {
+                        AnsiConsole.Write(new Markup("[red1]Rossz érték![/]"));
+                        //Menu(ships, map, aimap, Win, Lose);
+                    }
+                    nocrash2 = false;                                       
                 }
-            }
-            else if (Int32.Parse(lehelyezés.ToString()) == 2)
-            {
-                //Az AIGenerate függvényt használjuk, csak a saját map-el,
-                //ezzel megspórolva egy függvényt
-                selfAI = true;
-                AIGenerate(map);
-            }
-            else
-            {
-                AnsiConsole.Write(new Markup("[red1]Rossz érték![/]"));
-                Menu(ships, map, aimap, Win, Lose);
+                catch
+                {
+                    Thread.Sleep(500);
+                    Clear();
+                    PrintMap(map, aimap, ref Win, ref Lose);
+                    AnsiConsole.Write(new Markup("[cyan3]Ha te szeretnéd be írni, hogy hány másodperc múlva tűnjenek el az 'értesítések' a képernyőről nyomd meg az 1-et." + Environment.NewLine
+                    + "Ha azt szeretnéd, hogy csak akkor tűnjenek el, ha megnyomsz egy gombot, nyomd meg a 2-t.[/]"));
+                    WriteLine();
+                    ForegroundColor = ConsoleColor.White;
+                    WriteLine(answer3);
+                    AnsiConsole.Write(new Markup("[cyan3]Ha te szeretnéd lehelyezni a hajóidat, akkor írj be egy 1-et." + Environment.NewLine
+                    + "Ha véletlenszerű lehelyezést szeretnél, írj be egy 2-t.[/]"));
+                    WriteLine();
+                }
             }
         }        
 
@@ -2038,9 +2108,9 @@ namespace Torpedo
                 //Szeretne-e még játszani a player?
                 if (!run)
                 {
-                    WriteLine(" ");
+                    WriteLine();
                     AnsiConsole.Write(new Markup("[cyan3]Szeretnél még egyet játszani? (I/N)[/]"));
-                    WriteLine(" ");
+                    WriteLine();
                     ForegroundColor = ConsoleColor.White;
                     string yes = ReadLine();
                     if (yes == "I" || yes == "i")
@@ -2100,9 +2170,9 @@ namespace Torpedo
                     }
                     if (!run)
                     {
-                        WriteLine(" ");
+                        WriteLine();
                         AnsiConsole.Write(new Markup("[cyan3]Szeretnél még egyet játszani? (I/N)[/]"));
-                        WriteLine(" ");
+                        WriteLine();
                         ForegroundColor = ConsoleColor.White;
                         string yes = ReadLine();
                         if (yes.ToUpper() == "I")
