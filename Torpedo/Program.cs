@@ -495,7 +495,7 @@ namespace Torpedo
 
             AnsiConsole.Write(new Markup("[cyan3]Add meg a hajó sorszámát! (1. Repülőgép-hordozó(5), " +
                 "2. Csatahajó(4), 3. Romboló(3), 4. Tengeralattjáró(3), 5. Járőrhajó(2) )[/]"));
-            WriteLine(" ");
+            WriteLine();
             //Módosítjuk a ConsoleColor-t fehérre,
             //hogy a játékos által beírt szöveg fehér legyen, így "jobban" fog kinézni a játék
             ForegroundColor = ConsoleColor.White;
@@ -506,6 +506,7 @@ namespace Torpedo
             {
                 //"ship" változóként mentjük a bekért értéket
                 int ship = Int32.Parse(ReadLine());
+                answer = ship;
 
                 //Leellenőrizzük, hogy hibás-e a megadott érték, ha az,
                 //akkor újra meghívjuk a függvényt, ezzel errőlről kezdve az egészet
@@ -550,7 +551,7 @@ namespace Torpedo
 
             AnsiConsole.Write(new Markup("[cyan3]Add meg, a hajó kezdőponti és végponti koordinátáit!" + Environment.NewLine
                 + "(Fontos hogy ELŐSZÖR A KEZDŐ koordinátát adjuk meg, UTÁNA AZ UTOLSÓ koordinátát!!!)[/]"));
-            WriteLine(" ");
+            WriteLine();
             ForegroundColor = ConsoleColor.White;
 
             //Létrehozzuk előre azokat a változókat amiket használni fogunk,
@@ -565,90 +566,142 @@ namespace Torpedo
 
             //Amíg ez true, addig folyamatosan kéri be a választ, ha rosszul adnánk be
             bool bajvanmore = true;
+            bool bajvanmore2 = true;
+            bool bajvanmore3 = true;
 
             //Ez a ciklus arra van, hogyha rosszul adnánk meg a bekért értéket (pl. aaaa), ne crasheljen be a játék
             while (bajvanmore)
             {
-                //Bekérjük az első értéket, amit nagybetűvé con cvertálunk
-                string from = ReadLine().ToUpper();
-                
-                //Ezekkel az "if"-ekkel ellenőrizzük, hogy jól írtuk-e be a bekért értéket
-
-                //Megnézzük a hosszúságát, ezzel kizárva egy lehetséges hibát
-                if (from.Length! < 2 || from.Length! > 4)
+                while (bajvanmore2)
                 {
-                    AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
-                }
-
-                //Ezután megnézzük, hogy jó betűt adott-e meg (A és J között)
-                if (!chars.Contains(from[0]))
-                {
-                    AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
-                }
-
-                //Ha jól adtuk meg, akkor az első elemet (azaz a betűt (pl. A1 -> A = [0] 1 = [1]))
-                //a könyvtár segítségével "átkonvertáljuk" számmá (pl. A = 0)
-                fromX = mapCharToIntDict[from[0]];
-                //Ez után eltávolítjuk a stringből a betűt, hogy áttudjuk konvertálni int-é a string-et
-                a = from.Remove(0, 1);
-
-                //Ez a try catch azért kell, hogy ne crasheljen a játék,
-                //ha rosszul adjuk meg a bekért értéket.
-                try
-                {
-                    //Ha túl nagy számot adunk meg, akkor újra kezdjük
-                    if (Int32.Parse(a.ToString()) > 10 || Int32.Parse(a.ToString()) < 1)
+                    try
                     {
-                        AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
-                    }
-                }
-                catch
-                {
-                    AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
-                }
+                        //Bekérjük az első értéket, amit nagybetűvé con cvertálunk
+                        string from = ReadLine();
+                        answer2 = from;
+                        from = from.ToUpper();
 
-                //Átkonvertáljuk a bekért stringet int-é és kivonunk belőle egyet,
-                //mivel mi 0 és 9 között dolgozunk
-                fromY = Int32.Parse(a.ToString()) - 1;
+                        //Ezekkel az "if"-ekkel ellenőrizzük, hogy jól írtuk-e be a bekért értéket
+
+                        //Megnézzük a hosszúságát, ezzel kizárva egy lehetséges hibát
+                        if (from.Length! < 2 || from.Length! > 4)
+                        {
+                            AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
+                        }
+                        //Ezután megnézzük, hogy jó betűt adott-e meg (A és J között)
+                        else if (!chars.Contains(from[0]))
+                        {
+                            AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
+                        }
+
+                        //Ha jól adtuk meg, akkor az első elemet (azaz a betűt (pl. A1 -> A = [0] 1 = [1]))
+                        //a könyvtár segítségével "átkonvertáljuk" számmá (pl. A = 0)
+                        fromX = mapCharToIntDict[from[0]];
+                        //Ez után eltávolítjuk a stringből a betűt, hogy áttudjuk konvertálni int-é a string-et
+                        a = from.Remove(0, 1);
+
+                        //Ez a try catch azért kell, hogy ne crasheljen a játék,
+                        //ha rosszul adjuk meg a bekért értéket.
+                        try
+                        {
+                            //Ha túl nagy számot adunk meg, akkor újra kezdjük
+                            if (Int32.Parse(a.ToString()) > 10 || Int32.Parse(a.ToString()) < 1)
+                            {
+                                AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
+                            }
+                        }
+                        catch
+                        {
+                            AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
+                        }
+
+                        //Átkonvertáljuk a bekért stringet int-é és kivonunk belőle egyet,
+                        //mivel mi 0 és 9 között dolgozunk
+                        fromY = Int32.Parse(a.ToString()) - 1;
+
+                        bajvanmore2 = false;
+                    }
+                    catch
+                    {
+                        if (manual)
+                            ReadKey();
+                        else if (manual == false)
+                            Thread.Sleep(sleep);
+                        Clear();
+                        PrintMap(map, aimap, ref Win, ref Lose);
+                        AnsiConsole.Write(new Markup("[cyan3]Add meg a hajó sorszámát! (1. Repülőgép-hordozó(5), " +
+                "2. Csatahajó(4), 3. Romboló(3), 4. Tengeralattjáró(3), 5. Járőrhajó(2) )[/]"));
+                        ForegroundColor = ConsoleColor.White;
+                        WriteLine();
+                        WriteLine(answer);
+                        AnsiConsole.Write(new Markup("[cyan3]Add meg, a hajó kezdőponti és végponti koordinátáit!" + Environment.NewLine
+                + "(Fontos hogy ELŐSZÖR A KEZDŐ koordinátát adjuk meg, UTÁNA AZ UTOLSÓ koordinátát!!!)[/]"));
+                        WriteLine();
+                        ForegroundColor = ConsoleColor.White;
+                    }
+
+                }
 
                 //----------------------------------------------------------------------
 
-                //Bekérjük a második értéket és megismételjük a fenti dolgokat
-                string to = ReadLine().ToUpper();
-
-                if (to.Length! < 2 || to.Length! > 4)
+                while (bajvanmore3)
                 {
-                    AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
-                }
-
-                if (!chars.Contains(to[0]))
-                {
-                    AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
-                }
-
-                toX = mapCharToIntDict[to[0]];
-                b = to.Remove(0, 1);
-
-                try
-                {
-                    if (Int32.Parse(b.ToString()) > 10 || Int32.Parse(b.ToString()) < 1)
+                    try
                     {
-                        AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
-                    }
-                }
-                catch
-                {
-                    AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
-                }
+                        //Bekérjük a második értéket és megismételjük a fenti dolgokat
+                        string to = ReadLine().ToUpper();
 
-                WriteLine(toY);
-                toY = Int32.Parse(b) - 1;
+                        if (to.Length! < 2 || to.Length! > 4)
+                        {
+                            AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
+                        }
+                        else if (!chars.Contains(to[0]))
+                        {
+                            AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
+                        }
+
+                        toX = mapCharToIntDict[to[0]];
+                        b = to.Remove(0, 1);
+
+                        try
+                        {
+                            if (Int32.Parse(b.ToString()) > 10 || Int32.Parse(b.ToString()) < 1)
+                            {
+                                AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
+                            }
+                        }
+                        catch
+                        {
+                            AnsiConsole.Write(new Markup("[red1]Helytelen érték![/]"));
+                        }
+
+                        toY = Int32.Parse(b) - 1;
+
+                        bajvanmore3 = false;
+                    }
+                    catch
+                    {
+                        if (manual)
+                            ReadKey();
+                        else if (manual == false)
+                            Thread.Sleep(sleep);
+                        Clear();
+                        PrintMap(map, aimap, ref Win, ref Lose);
+                        AnsiConsole.Write(new Markup("[cyan3]Add meg a hajó sorszámát! (1. Repülőgép-hordozó(5), " +
+                "2. Csatahajó(4), 3. Romboló(3), 4. Tengeralattjáró(3), 5. Járőrhajó(2) )[/]"));
+                        ForegroundColor = ConsoleColor.White;
+                        WriteLine();
+                        WriteLine(answer);
+                        AnsiConsole.Write(new Markup("[cyan3]Add meg, a hajó kezdőponti és végponti koordinátáit!" + Environment.NewLine
+                + "(Fontos hogy ELŐSZÖR A KEZDŐ koordinátát adjuk meg, UTÁNA AZ UTOLSÓ koordinátát!!!)[/]"));
+                        WriteLine();
+                        WriteLine(answer2);
+                    }                    
+                }
 
                 //Ha mindenhol jól adtunk meg mident, akkor ezzel kilépünk a ciklusból
                 bajvanmore = false;
             }
-
-            WriteLine(fromX.ToString() + fromY.ToString() + toX.ToString() + toY.ToString());
 
             //A létrejött int változókat egy tömbbe rakjuk, hogy könnyen tudjuk használni a "Place" függvényben is
             int[] coordinates = { fromX, fromY, toX, toY };
@@ -1170,7 +1223,7 @@ namespace Torpedo
 
                         shootCol--;
 
-                        if (map[shootRow, shootCol] == -2) {
+                        if (map[shootRow, shootCol] < 0) {
                             isColLeftOccupied = true;
 
                             shootCol++;
@@ -1186,7 +1239,7 @@ namespace Torpedo
 
                         shootCol++;
 
-                        if (map[shootRow, shootCol] == -2) {
+                        if (map[shootRow, shootCol] < 0) {
                             isColRightOccupied = true;
 
                             shootCol--;
@@ -1202,7 +1255,7 @@ namespace Torpedo
 
                         shootRow--;
 
-                        if (map[shootRow, shootCol] == -2) {
+                        if (map[shootRow, shootCol] < 0) {
                             isRowLeftOccupied = true;
 
                             shootRow++;
@@ -1218,7 +1271,7 @@ namespace Torpedo
 
                         shootRow++;
 
-                        if (map[shootRow, shootCol] == -2) {
+                        if (map[shootRow, shootCol] < 0) {
                             isRowRightOccupied = true;
 
                             shootRow--;
@@ -1791,6 +1844,9 @@ namespace Torpedo
 
         int sleep = 0;
 
+        int answer = 0;
+        string answer2 = null;
+
         //Létrehozunk egy Menu függvényt,
         //a játék elején lévő kérdések kiíráshoz és használáshoz
         public void Menu(int[] ships, int[,] map, int[,] aimap, int Win, int Lose)
@@ -1814,8 +1870,8 @@ namespace Torpedo
                 AnsiConsole.Write(new Markup("[cyan3]Add meg, hogy hány másodperc múlva tűnjenek el az értesítések. (pl. 1 vagy 1.5)[/]"));
                 WriteLine();
                 string answer = ReadLine();
-                float asd = float.Parse(sleep.ToString());
-                asd = asd* 1000;
+                float asd = float.Parse(answer.ToString());
+                asd = asd*1000;
 
                 sleep = Int32.Parse(asd.ToString());
             }
